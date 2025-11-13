@@ -14,17 +14,15 @@ function Header() {
         {
             link: '/contactus.html',
             text: 'Contact us'
-        },
-        {
-            link: '/termsofservices.html',
-            text: 'Download Linkzy'
         }
     ]
     return (
-        <div className='2xl:flex 2xl:justify-center'>
-            <div className="p-3 my-3 flex justify-between items-center relative 2xl:w-2/3">
+        <div className='xl:flex xl:justify-center'>
+            <div className="p-3 my-3 flex justify-between items-center relative xl:w-4/5 2xl:w-2/3">
                 {/* Logo */}
-                <div className="flex items-center hover:opacity-25 transtion duration-500 hover:cursor-pointer">
+                <a
+                    href='/'
+                    className="flex items-center hover:opacity-25 transtion duration-500 hover:cursor-pointer">
                     <Image
                         src="/icon.png"
                         alt="Main Logo"
@@ -37,10 +35,10 @@ function Header() {
                         className='lg:h-15 lg:w-15'
                     />
                     <span className="hidden sm:inline ml-2 mx-2 text-3xl font-bold font-stretch-125% ">Linkzy</span>
-                </div>
+                </a>
 
                 {/* Desktop Menu */}
-                <div className="hidden sm:flex space-x-6 font-semibold">
+                <div className="hidden sm:flex space-x-6 font-semibold items-center">
                     {menuOptions.map((option) => (
                         <a
                             key={option.text}
@@ -50,6 +48,11 @@ function Header() {
                             {option.text}
                         </a>
                     ))}
+                    <div className='bg-white p-2  px-4 rounded-full text-black'>
+                        <a href='download'>
+                            Download Linkzy
+                        </a>
+                    </div>
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -64,10 +67,15 @@ function Header() {
                 {openMenu && (
                     <div className="rounded-lg right-5 left-5 absolute bg-white top-20 w-11/12 self-center shadow-lg z-50 sm:hidden">
                         {menuOptions.map((menuOption) => (
-                            <div key={menuOption.text} className="p-3 py-4 text-black font-semibold border-t">
+                            <div key={menuOption.text} className="p-3 py-4 text-black font-semibold ">
                                 <a href={menuOption.link}>{menuOption.text}</a>
                             </div>
                         ))}
+                        <div className='bg-black p-1 px-4 mx-2 my-2 font-bold rounded-full text-white'>
+                            <a href='download'>
+                                Download Linkzy
+                            </a>
+                        </div>
                     </div>
                 )}
             </div>

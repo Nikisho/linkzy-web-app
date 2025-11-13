@@ -10,7 +10,7 @@ function Feed() {
     const fetchEvents = async () => {
         const { data, error } = await supabase
             .from('featured_events')
-            .select(`*, ticket_types(*)`)
+            .select(`*, ticket_types(*), organizers(*, users(*))`)
         if (data) {
             console.log(data);
             setEvents(data)
@@ -26,7 +26,9 @@ function Feed() {
         const lowestPrice = getLowestPrice(item.ticket_types);
 
         return (
-            <div className="flex bg-red- flex-col lg:flex-col mt-2 items-center sm:items-start hover:opacity-20 hover:cursor-pointer transition duration-500">
+            <a
+                href={`/events/${item.featured_event_id.toString()}`}
+                className="flex bg-red- flex-col lg:flex-col mt-2 items-center sm:items-start hover:opacity-20 hover:cursor-pointer transition duration-500">
                 <div className="w-full lg:mx-3 sm:w-70 h-70 overflow-hidden rounded-xl lg:mb-3">
                     <Image
                         src={item.image_url!}
@@ -39,13 +41,16 @@ function Feed() {
                 <div className="mt-3 sm:mt-0 sm:ml-4 text-center sm:text-left">
                     <p className="text-base sm:text-lg font-semibold">{item.title}</p>
                     <p className="text-sm text-amber-600">{formattedDate}</p>
+
+                    <p className="text-base sm:text-lg font-semibold">{item.organizers.users.name}</p>
+
                     {lowestPrice !== null && (
                         <p className="text-sm sm:text-base font-medium text-gray-200">
                             {lowestPrice}
                         </p>
                     )}
                 </div>
-            </div>
+            </a>
 
         );
     };
@@ -55,7 +60,7 @@ function Feed() {
             <div className='2xl:w-2/3'>
 
             <h1 className="text-2xl font-bold mb-4">Events</h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-y-5">
                 {events?.map((event) => (
                     <RenderItem key={event.featured_event_id} item={event} />
                 ))}
