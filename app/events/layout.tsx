@@ -1,11 +1,15 @@
 import React from 'react'
 
-function events() {
+function EventsLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <div>
-        
+        {children}
     </div>
   )
 }
 
-export default events
+export default EventsLayout;
