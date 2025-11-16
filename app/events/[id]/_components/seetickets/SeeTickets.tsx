@@ -2,11 +2,13 @@
 import { useState } from "react";
 import TicketsModal from "./TicketsModal";
 import { TicketTypes } from "../../_types/TicketTypes";
+import { Event } from "@/app/_types/Event";
 
 export default function SeeTickets({
-    ticket_types
-}: {ticket_types: TicketTypes[]}) {
+    event
+}: {event: Event}) {
     const [open, setOpen] = useState<boolean>(false);
+    console.log(event)
     return (
         <div>
             <button
@@ -17,7 +19,7 @@ export default function SeeTickets({
             <TicketsModal
                 open={open}
                 setOpen={setOpen}
-                ticket_types={ticket_types}
+                event={event}
             />
         </div>
     )
