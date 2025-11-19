@@ -6,6 +6,7 @@ export interface TicketTypes{
     sales_end: Date;
     name:string;
     quantity:number;
+    tickets_sold: number;
     price:number;
     description:string;
 }

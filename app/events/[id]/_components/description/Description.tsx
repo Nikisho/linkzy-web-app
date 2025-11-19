@@ -10,7 +10,7 @@ export default function Description({
     const isLong = description.length > max;
     const shown = expanded ? description : description.slice(0, max) + elipsis;
     return (
-        <div className='my-3 bg-radial-[at_25%_25%] from-gray-800 to-zinc-900 to-75% p-3 rounded-2xl shadow shadow-2xl'>
+        <div className='my-3 bg-radial-[at_25%_25%] from-gray-800 to-zinc-900 to-75% p-3 rounded-2xl'>
             <p className='text-2xl my-2 truncate'>About</p>
             <p>
                 {shown}

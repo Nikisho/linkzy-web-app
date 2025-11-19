@@ -1,7 +1,11 @@
+import { TicketTypes } from "../events/[id]/_types/TicketTypes";
+
 export interface Event {
     title: string;
+    chat_room_id:number;
     description: string;
     date: string;
+    time: string;
     location: string;
     image_url?: string;
     organizer_id: string;
@@ -13,15 +17,5 @@ export interface Event {
         name:string
       }
     }
-    ticket_types : {
-      price: number;
-      name: string;
-      description: string;
-      quantity:number;
-      ticket_type_id:number;
-      featured_event_id:number;
-      is_free:boolean
-      sales_start:Date;
-      sales_end:Date
-    }[]
+    ticket_types : TicketTypes[]
 }
