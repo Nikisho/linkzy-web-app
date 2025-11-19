@@ -176,7 +176,7 @@ function CheckoutModal({
 
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <Box>
-                            <div className={`bg-white mb-10 text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
+                            <div className={`bg-white mb-20 text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
 
                                 {/* Close Button */}
                                 <button
@@ -194,7 +194,22 @@ function CheckoutModal({
                                         className="w-full h-full object-cover"
                                     />
                                 </div>
-
+                                <div className="xl:hidden">
+                                    {
+                                        success && (
+                                            <div className="bg-green-100 text-green-800 p-3 rounded-md text-sm">
+                                                Booking successful. A confirmation email has been sent.
+                                            </div>
+                                        )
+                                    }
+                                    {
+                                        serverError && (
+                                            <div className="bg-red-100  text-red-800 p-3 rounded-md  text-sm">
+                                                {serverError}
+                                            </div>
+                                        )
+                                    }
+                                </div>
                                 {/* Event Info */}
                                 <div className="p-4">
                                     <h1 className="text-xl font-semibold">{event.title}</h1>
@@ -305,18 +320,19 @@ function CheckoutModal({
                                 }
                                 {
                                     success && (
-                                        <div className="bg-green-100 text-green-800 p-3 rounded-md my-3 mb-20 text-sm">
+                                        <div className="hidden xl:flex bg-green-100 text-green-800 p-3 rounded-md my-3 text-sm">
                                             Booking successful. A confirmation email has been sent.
                                         </div>
                                     )
                                 }
                                 {
                                     serverError && (
-                                        <div className="bg-red-100 text-red-800 p-3 rounded-md my-3 mb-20 text-sm">
+                                        <div className="hidden xl:flex bg-red-100  text-red-800 p-3 rounded-md my-3 text-sm">
                                             {serverError}
                                         </div>
                                     )
                                 }
+
                                 {/* Checkout Button (Sticky Bottom) */}
                                 <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98]">
                                     <button
