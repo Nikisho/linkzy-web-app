@@ -169,7 +169,7 @@ function CheckoutModal({
 
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <Box>
-                            <div className={`bg-white text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
+                            <div className={`bg-white mb-12 text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
 
                                 {/* Close Button */}
                                 <button

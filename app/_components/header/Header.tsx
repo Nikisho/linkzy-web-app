@@ -12,7 +12,7 @@ function Header() {
             text: 'Browse'
         },
         {
-            link: '/contactus.html',
+            link: '/contact',
             text: 'Contact us'
         }
     ]
