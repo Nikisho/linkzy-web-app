@@ -14,7 +14,8 @@ export default async function ContactPage() {
                             Contact Us
                         </h1>
                         <p>
-                            Need help, feedback, or want to report an issue? We’re here to assist.
+                            Need help with the app, want to share feedback, or spotted something that isn’t working as expected? We’re here to support you. Whether you have questions about events, tickets, payments, or general app features, feel free to reach out. 
+                            Every message helps us improve Linkzy and build a smoother, more enjoyable experience for everyone.
                         </p>
                     </div>
 

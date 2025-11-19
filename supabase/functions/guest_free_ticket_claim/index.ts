@@ -7,8 +7,7 @@
 import { supabaseAdmin } from "../_utils/supabase.ts";
 import { generateTicket } from "../_utils/generateTicket.ts";
 import { bookFeaturedEvent } from "../_utils/bookFeaturedEvent.ts";
-import { emailUserUponPurchase } from "../_utils/emailUserUponPurchase.ts";
-
+import { checkExistingBooking } from "../_utils/checkExistingBooking.ts"
 console.log("Hello from Functions!");
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -45,7 +44,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (fetchErr) {
-      console.log("Error fetching user :,", fetchErr);
+      console.log("Error fetching user :", fetchErr);
     }
 
     if (existingUser) {
@@ -77,6 +76,10 @@ Deno.serve(async (req) => {
       }
     }
 
+    //check user has booked
+    const existing = await checkExistingBooking(user_id, ticket.featured_event_id, corsHeaders);
+    if (existing) return existing;
+
     await bookFeaturedEvent(
       user_id,
       ticket.featured_event_id,
@@ -94,23 +97,17 @@ Deno.serve(async (req) => {
       ticket.ticket_type_id,
     );
 
-    // await emailUserUponPurchase(
-    //   user_id,
-    //   event,
-    //   user,
-    // );
-
     return new Response(
       JSON.stringify({ user_id }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
-  } catch (err:any) {
+  } catch (err: any) {
     console.error("Function error:", err);
-
+    const status = err.status || 500;
     return new Response(
       JSON.stringify({ error: err.message ?? "UNKNOWN_ERROR" }),
       {
-        status: 500,
+        status,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );

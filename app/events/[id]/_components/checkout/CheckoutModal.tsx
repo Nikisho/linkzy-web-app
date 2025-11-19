@@ -113,7 +113,7 @@ function CheckoutModal({
             setLoading(true);
             if (selectedTicket.price.toString() === '0') {
 
-                const { data: user_id, error } = await supabase.functions.invoke(
+                const { data: user_id, error, response } = await supabase.functions.invoke(
                     'guest_free_ticket_claim',
                     {
                         body: {
@@ -136,6 +136,13 @@ function CheckoutModal({
                 );
 
                 if (error) {
+                    const status = response?.status
+                    // console.log('Error code is  ', response?.status)
+                    if (status === 409) {
+                        setServerError("You already have a booking for this event.");
+                        return;
+                    }
+
                     setServerError("Something went wrong. Please try again.");
                     return;
                 }
