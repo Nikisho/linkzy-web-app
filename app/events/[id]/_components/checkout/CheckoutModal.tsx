@@ -176,7 +176,7 @@ function CheckoutModal({
 
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <Box>
-                            <div className={`bg-white mb-12 text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
+                            <div className={`bg-white mb-10 text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
 
                                 {/* Close Button */}
                                 <button
@@ -305,14 +305,14 @@ function CheckoutModal({
                                 }
                                 {
                                     success && (
-                                        <div className="bg-green-100 text-green-800 p-3 rounded-md my-3 text-sm">
+                                        <div className="bg-green-100 text-green-800 p-3 rounded-md my-3 mb-20 text-sm">
                                             Booking successful. A confirmation email has been sent.
                                         </div>
                                     )
                                 }
                                 {
                                     serverError && (
-                                        <div className="bg-red-100 text-red-800 p-3 rounded-md my-3 text-sm">
+                                        <div className="bg-red-100 text-red-800 p-3 rounded-md my-3 mb-20 text-sm">
                                             {serverError}
                                         </div>
                                     )
