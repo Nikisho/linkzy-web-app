@@ -5,6 +5,7 @@ export const checkExistingBooking = async (
   featured_event_id: number,
   corsHeaders: any
 ): Promise<Response | null> => {
+    console.log('Booking parameters received :', user_id, featured_event_id)
   const { data: existingBooking, error } = await supabaseAdmin
     .from("featured_event_bookings")
     .select("*")
@@ -13,8 +14,9 @@ export const checkExistingBooking = async (
     .maybeSingle();
 
   if (error) {
+    console.log('Failed to check existing booking :', error.message)
     return new Response(
-      JSON.stringify({ error: "Failed to check existing booking" }),
+      JSON.stringify({ error: `Failed to check existing booking : ${error.message}` }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 500,

@@ -8,12 +8,9 @@ import formatDateShortWeekday from "@/app/_utils/formatDateShortWeekday";
 import supabase from "@/supabase";
 import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
+import StripePayment from "../stripepayment/StripePayment";
+import { User } from "../../_types/User";
 
-type User = {
-    name: string;
-    email: string;
-    confirmEmail: string;
-};
 
 function CheckoutModal({
     open,
@@ -32,8 +29,7 @@ function CheckoutModal({
     const [success, setSuccess] = useState(false);
     const [serverError, setServerError] = useState("");
     const { push } = useRouter();
-
-
+    const [openStripeModal, setOpenStripeModal] = useState(false);
     const validateName = (value: string) => {
         if (!value.trim()) return "Name is required";
         if (value.trim().length < 2) return "Name must be at least 2 characters";
@@ -93,10 +89,13 @@ function CheckoutModal({
 
         }
     }
-    const handleCheckout = async () => {
-        // emailUserUponPurchase(12);
+    const openStripePaymentModal = async () => {
+        setOpenStripeModal(true);
+    };
 
-        // return;
+
+    const handleFreeCheckout = async () => {
+
         setServerError("");
         setSuccess(false);
 
@@ -336,11 +335,11 @@ function CheckoutModal({
                                 {/* Checkout Button (Sticky Bottom) */}
                                 <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98]">
                                     <button
-                                        onClick={() => handleCheckout()}
+                                        onClick={() => {selectedTicket.price.toString() === '0' ? handleFreeCheckout() : openStripePaymentModal() }}
                                         className="w-full bg-black text-white py-3 rounded-lg font-semibold"
                                     >
                                         {
-                                            selectedTicket.price.toString() === '0' ? "Register" : 'Contiinue to Payment'
+                                            selectedTicket.price.toString() === '0' ? "Register" : 'Continue to Payment'
                                         }
                                     </button>
                                 </div>
@@ -349,6 +348,13 @@ function CheckoutModal({
                     </Modal>
                 )
             }
+            <StripePayment 
+                open={openStripeModal}
+                setOpen={setOpenStripeModal}
+                user={user}
+                selectedTicket={selectedTicket}
+                event={event}
+            />
         </>
 
 
