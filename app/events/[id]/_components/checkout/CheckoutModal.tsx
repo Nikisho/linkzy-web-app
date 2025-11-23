@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import StripePayment from "../stripepayment/StripePayment";
 import { User } from "../../_types/User";
+import { emailUserUponPurchase } from "@/app/_utils/emailUserUponPurchase";
 
 
 function CheckoutModal({
@@ -54,42 +55,20 @@ function CheckoutModal({
     async function generateQRCodeBase64(value: string) {
         return await QRCode.toDataURL(value, { width: 500 });
     }
-    const emailUserUponPurchase = async (user_id: number) => {
 
-        try {
-            const edge_function_base_url = 'https://wffeinvprpdyobervinr.supabase.co/functions/v1/ticket-purchase-email'
-            const qrValue = `com.linkzy://event/${event.featured_event_id}/user/${user_id}`;
-            const base64Qr = await generateQRCodeBase64(qrValue);
-
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
-
-            const accessToken = session?.access_token;
-            const response = await fetch(edge_function_base_url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    name: user.name,
-                    email: user.email,
-                    title: event.title,
-                    location: event.location,
-                    date: event.date && event.time && (formatDateShortWeekday(event.date) + ', ' + (event.time).slice(0, -3)),
-                    qrValue: base64Qr.split(",")[1]
-                }),
-            });
-
-            const data = await response.json();
-            console.log("✅ Function response:", data);
-        } catch (error: any) {
-            console.error('Error booking event:', error.message);
-
-        }
-    }
     const openStripePaymentModal = async () => {
+
+        setServerError("");
+        setSuccess(false);
+
+        const nameErr = validateName(user.name);
+        const emailErr = validateEmail(user.email);
+        const confirmErr = validateConfirmEmail(user.email, user.confirmEmail);
+
+        if (nameErr || emailErr || confirmErr) {
+            setErrors({ name: nameErr, email: emailErr, confirmEmail: confirmErr });
+            return;
+        }
         setOpenStripeModal(true);
     };
 
@@ -147,7 +126,7 @@ function CheckoutModal({
                 }
 
                 if (user_id) {
-                    emailUserUponPurchase(user_id);
+                    emailUserUponPurchase(user_id, event, user);
                     push(`/events/${event.featured_event_id}/confirmation`);
                     return;
                 }

@@ -1,12 +1,14 @@
 'use client'
 import { Box, Modal } from '@mui/material';
-import { Elements, PaymentElement } from '@stripe/react-stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import { useEffect, useMemo, useState } from 'react';
-import supabase from "@/supabase";
+import { useEffect, useState } from 'react';
 import { User } from '../../_types/User';
 import { TicketTypes } from '../../_types/TicketTypes';
 import { Event } from '@/app/_types/Event';
+import CheckoutForm from './CheckoutForm';
+import supabase from '@/supabase';
+import { emailUserUponPurchase } from '@/app/_utils/emailUserUponPurchase';
 
 export default function StripePayment({
     open,
@@ -15,41 +17,113 @@ export default function StripePayment({
     selectedTicket,
     event
 }: { open: boolean, setOpen: (bool: boolean) => void, user: User, selectedTicket: TicketTypes, event: Event }) {
+
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
-
     const [loading, setLoading] = useState(false);
-    console.log(selectedTicket)
-    const handleStripeCheckout = async () => {
+
+    const handleStripeCheckout = async (): Promise<void> => {
         setLoading(true);
-        const forwardUrl = 'http://127.0.0.1:54321/functions/v1/guest_paid_ticket_claim';
+        setClientSecret(null);
 
-        const response = await fetch(forwardUrl, {
-            method: 'POST',
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                // user: { name: user.name, email: user.email },
-                user: { name: 'Romain', email: 'phobereromain@gmail.com' },
-                selected_ticket: {
-                    featured_event_id: selectedTicket.featured_event_id,
-                    tickets_sold: selectedTicket.tickets_sold,
-                    ticket_type_id: selectedTicket.ticket_type_id,
-                    price: selectedTicket.price
-                },
-                event: {
-                    date: event.date,
-                    organizer_id: event.organizer_id,
-                    chat_room_id: event.chat_room_id,
+        try {
+            if (!user?.email || !user?.name) {
+                throw new Error('User information is incomplete');
+            }
+
+            if (!selectedTicket?.ticket_type_id || !selectedTicket?.price) {
+                throw new Error('Ticket information is incomplete');
+            }
+
+            if (!event?.organizer_id) {
+                throw new Error('Event information is incomplete');
+            }
+
+            if ( selectedTicket.price <= 0) {
+                throw new Error('Invalid ticket price');
+            }
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(user.email)) {
+                throw new Error('Invalid email format');
+            }
+
+            console.log('Initiating Stripe checkout process...');
+
+            const { data, error } = await supabase.functions.invoke(
+                'guest_paid_ticket_claim',
+                {
+                    body: {
+                        user: {
+                            name: user.name.trim(),
+                            email: user.email.toLowerCase().trim(),
+                        },
+                        selected_ticket: {
+                            featured_event_id: selectedTicket.featured_event_id,
+                            tickets_sold: selectedTicket.tickets_sold,
+                            ticket_type_id: selectedTicket.ticket_type_id,
+                            price: Number(selectedTicket.price)
+                        },
+                        event: {
+                            date: event.date,
+                            organizer_id: event.organizer_id,
+                            chat_room_id: event.chat_room_id,
+                        },
+                    },
                 }
-            })
-        });
+            );
 
-        const data = await response.json();
-        console.log(data);
-        setClientSecret(data.client_secret)
-        setLoading(false);
+            // Handle Supabase function errors
+            if (error) {
+                console.error('Supabase function error:', error);
+                throw new Error(`Payment setup failed: ${error.message}`);
+            }
+
+            // Validate response data structure
+            if (!data) {
+                throw new Error('No data received from payment service');
+            }
+
+            if (!data.client_secret || typeof data.client_secret !== 'string') {
+                console.error('Invalid response data:', data);
+                throw new Error('Invalid response from payment service');
+            }
+
+            console.log('Payment intent created successfully', data.client_secret);
+
+            // Set the client secret for Stripe Elements
+            setClientSecret(data.client_secret);
+
+            // Send confirmation email if user_id is provided
+            if (data.user_id) {
+                try {
+                    await emailUserUponPurchase(data.user_id, event, user);
+                    console.log('Confirmation email sent successfully');
+                } catch (emailError) {
+                    // Don't throw error for email failures - payment was still successful
+                    console.warn('Failed to send confirmation email:', emailError);
+                    // You might want to show a non-blocking warning to the user
+                }
+            } else {
+                console.warn('No user_id received for sending confirmation email');
+            }
+
+        } catch (error) {
+            console.error('Stripe checkout failed:', error);
+
+            const errorMessage = error instanceof Error
+                ? error.message
+                : 'An unexpected error occurred during payment setup';
+
+            // Show error to user (you might want to use a toast or state for this)
+            // setErrorState(errorMessage);
+
+            // Optionally: trigger error reporting service
+            // reportErrorToService(error);
+
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -57,27 +131,7 @@ export default function StripePayment({
         handleStripeCheckout();
     }, [open]);
 
-    const options = clientSecret ? { clientSecret } : undefined;
-    const handleSubmit = async (e:any) => {
-        e.preventDefault();
-        setLoading(true);
-
-        const stripe = await stripePromise;
-
-        const { error } = await stripe!.confirmPayment({
-            // elements,
-            clientSecret: clientSecret!,
-            confirmParams: {
-                return_url: `http://localhost:3000/${event.featured_event_id}/confirmation`,
-            },
-        });
-
-        if (error) {
-            console.error(error.message);
-            setLoading(false);
-            return;
-        }
-    };
+    console.log('Secret received: ', clientSecret);
 
     return (
         <Modal open={open} onClose={() => setOpen(false)}>
@@ -90,22 +144,11 @@ export default function StripePayment({
                             ${loading ? 'opacity-30' : ''}`}
                         >
                             <div className="mt-10">
-                                <Elements stripe={stripePromise} options={options}>
-                                    <form className="flex flex-col gap-4">
-                                        <PaymentElement />
-                                        <button
-                                            type="submit"
-                                            onClick={handleSubmit}
-                                            className="w-full py-3 rounded-md bg-black text-white font-semibold"
-                                        >
-                                            Submit
-                                        </button>
-                                    </form>
+                                <Elements stripe={stripePromise} options={{ clientSecret: clientSecret }}>
+                                    <CheckoutForm />
                                 </Elements>
                             </div>
-
                         </div>
-
                     )
                 }
             </Box>
