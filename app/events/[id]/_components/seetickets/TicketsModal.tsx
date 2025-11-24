@@ -10,13 +10,14 @@ function TicketsModal({
     open,
     setOpen,
     event
-}: { open: boolean, setOpen: (bool: boolean) => void, event: Event}) {
+}: { open: boolean, setOpen: (bool: boolean) => void, event: Event }) {
     const [openCheckoutModal, setOpenCheckoutModal] = useState<boolean>(false);
     const [selectedTicketType, setSelectedTicketType] = useState<TicketTypes | null>(null);
     const handleSelect = (ticket: TicketTypes) => {
         setSelectedTicketType(ticket)
         setOpenCheckoutModal(!openCheckoutModal)
-    }
+    };
+
     return (
         <>
             <Modal
@@ -37,14 +38,17 @@ function TicketsModal({
 
                         <div className="space-y-4 p-4">
                             {event?.ticket_types?.map((type) => {
+                                const now = new Date();
                                 const soldOut = type.quantity === 0;
+                                const hasSalesEnded = new Date(type.sales_end).getTime() <= now.getTime();
+                                const salesNotStarted = new Date(type.sales_start).getTime() > now.getTime();
                                 return (
                                     <div
                                         key={type.ticket_type_id}
                                         className="bg-gray-100 rounded-xl p-4 flex flex-col shadow-sm border border-gray-200"
                                     >
                                         {/* Name + Price */}
-                                        <div className="flex justify-between items-center mb-2">
+                                        <div className="flex justify-between types-center mb-2">
                                             <p className="font-semibold text-lg">{type.name}</p>
 
                                             {
@@ -68,14 +72,14 @@ function TicketsModal({
 
                                         {/* CTA */}
                                         <button
-                                            disabled={soldOut}
+                                            disabled={soldOut || hasSalesEnded}
                                             onClick={() => handleSelect(type)}
-                                            className={`w-full py-2 rounded-lg font-semibold ${soldOut
+                                            className={`w-full py-2 rounded-lg font-semibold ${soldOut || hasSalesEnded || salesNotStarted
                                                 ? "bg-gray-300 text-gray-600"
                                                 : "bg-black text-white active:scale-[0.98] transition duration-300"
                                                 }`}
                                         >
-                                            {soldOut ? "Sold Out" : "Select"}
+                                            {soldOut ? "Sold Out" : (hasSalesEnded ? 'Sales Ended' : (salesNotStarted ? 'Sales Not Started' : 'Select'))}
                                         </button>
                                     </div>
                                 );

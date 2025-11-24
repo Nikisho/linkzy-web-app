@@ -23,6 +23,7 @@ export default function StripePayment({
     const [loading, setLoading] = useState(false);
 
     const handleStripeCheckout = async (): Promise<void> => {
+
         setLoading(true);
         setClientSecret(null);
 
@@ -50,7 +51,7 @@ export default function StripePayment({
 
             console.log('Initiating Stripe checkout process...');
 
-            const { data, error } = await supabase.functions.invoke(
+            const { data, error, response } = await supabase.functions.invoke(
                 'guest_paid_ticket_claim',
                 {
                     body: {
@@ -73,10 +74,19 @@ export default function StripePayment({
                 }
             );
 
-            // Handle Supabase function errors
             if (error) {
                 console.error('Supabase function error:', error);
-                throw new Error(`Payment setup failed: ${error.message}`);
+                const status = response?.status
+                console.log('Error code is  ', response?.status)
+                if (status === 409) {
+                    alert("You already have a booking for this event.");
+                    return;
+                }
+
+                // alert("Something went wrong. Please try again.");
+                return;
+                // throw new Error(`Payment setup failed: ${error.message}`);
+
             }
 
             // Validate response data structure

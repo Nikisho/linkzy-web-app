@@ -52,11 +52,36 @@ function CheckoutModal({
         return "";
     };
 
-    async function generateQRCodeBase64(value: string) {
-        return await QRCode.toDataURL(value, { width: 500 });
-    }
+    const checkExistingBooking = async () => {
+        const { data: user_id, error } = await supabase
+            .from('users')
+            .select('id')
+            .eq('email', user.email)
+            .single();
+        error && console.error(error.message);
+        if (user_id) {
 
+            const { error, data: booking } = await supabase
+                .from('featured_event_bookings')
+                .select()
+                .eq('user_id', user_id.id)
+                .eq('featured_event_id', event.featured_event_id)
+            if (error) {
+                console.error('Error fetching booking ' , error.message);
+            }
+            if (booking && booking.length > 0) {
+                return true;
+            }
+        }
+        return false;
+    };
     const openStripePaymentModal = async () => {
+
+        const existingBooking = await checkExistingBooking();
+        if (existingBooking) {
+            setServerError("You already have a booking for this event.");
+            return;
+        }
 
         setServerError("");
         setSuccess(false);
@@ -74,7 +99,11 @@ function CheckoutModal({
 
 
     const handleFreeCheckout = async () => {
-
+        const existingBooking = await checkExistingBooking();
+        if (existingBooking) {
+            setServerError("You already have a booking for this event.");
+            return;
+        }
         setServerError("");
         setSuccess(false);
 
@@ -314,7 +343,7 @@ function CheckoutModal({
                                 {/* Checkout Button (Sticky Bottom) */}
                                 <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98]">
                                     <button
-                                        onClick={() => {selectedTicket.price.toString() === '0' ? handleFreeCheckout() : openStripePaymentModal() }}
+                                        onClick={() => { selectedTicket.price.toString() === '0' ? handleFreeCheckout() : openStripePaymentModal() }}
                                         className="w-full bg-black text-white py-3 rounded-lg font-semibold"
                                     >
                                         {
@@ -327,7 +356,7 @@ function CheckoutModal({
                     </Modal>
                 )
             }
-            <StripePayment 
+            <StripePayment
                 open={openStripeModal}
                 setOpen={setOpenStripeModal}
                 user={user}

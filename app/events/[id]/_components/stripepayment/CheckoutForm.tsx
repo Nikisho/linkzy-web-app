@@ -9,12 +9,10 @@ const CheckoutForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const { id } = useParams();
-    console.log('Page found :', id)
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         
         if (!stripe || !elements) {
-            // Stripe.js hasn't yet loaded
             return;
         }
 
@@ -24,14 +22,10 @@ const CheckoutForm = () => {
         const { error } = await stripe.confirmPayment({
             elements,
             confirmParams: {
-                // Make sure to change this to your payment completion page
                 return_url: `${window.location.origin}/events/${id}/confirmation`,
             },
         });
 
-        // This point will only be reached if there is an immediate error when
-        // confirming the payment. Otherwise, your customer will be redirected to
-        // your `return_url`.
         if (error) {
             setErrorMessage(error.message || 'An unexpected error occurred.');
             console.log('Payment error:', error);
@@ -40,7 +34,6 @@ const CheckoutForm = () => {
         setIsLoading(false);
     };
 
-    // Show loading state while Stripe loads
     if (!stripe || !elements) {
         return (
             <div className="flex justify-center items-center p-8">
