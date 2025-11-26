@@ -1,8 +1,13 @@
+import { emailUserUponPurchase } from "@/app/_utils/emailUserUponPurchase";
 import formatDateShortWeekday from "@/app/_utils/formatDateShortWeekday";
 import supabase from "@/supabase";
 
-export default async function ConfirmationPage({ params }: { params: { id: string } }) {
+export default async function ConfirmationPage(
+    { params, searchParams }: { params: { id: string }, searchParams: { userid: string } }
+) {
+    const { userid } = await searchParams;
     const { id } = await params;
+    console.log(userid, id );
     async function fetchEventData() {
         const { data, error } = await supabase
             .from("featured_events")
@@ -16,8 +21,23 @@ export default async function ConfirmationPage({ params }: { params: { id: strin
         }
         return data;
     }
+    async function fetchUserData()  {
+        const { data, error }: any = await supabase
+            .from("users")
+            .select("email, name")
+            .eq("id", userid)
+            .single();
 
+        if (error) {
+            console.error("ConfirmationPage fetch error:", error.message);
+            return null;
+        }
+        return data;
+    }
     const event = await fetchEventData();
+    const user = await fetchUserData();
+
+    await emailUserUponPurchase(Number(userid), event, user)
 
     return (
         <div className="flex justify-center px-4 py-10">

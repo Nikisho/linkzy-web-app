@@ -7,10 +7,8 @@ import { Event } from "@/app/_types/Event";
 import formatDateShortWeekday from "@/app/_utils/formatDateShortWeekday";
 import supabase from "@/supabase";
 import { useRouter } from "next/navigation";
-import QRCode from "qrcode";
 import StripePayment from "../stripepayment/StripePayment";
 import { User } from "../../_types/User";
-import { emailUserUponPurchase } from "@/app/_utils/emailUserUponPurchase";
 
 
 function CheckoutModal({
@@ -155,7 +153,7 @@ function CheckoutModal({
                 }
 
                 if (user_id) {
-                    emailUserUponPurchase(user_id, event, user);
+                    // emailUserUponPurchase(user_id, event, user);
                     push(`/events/${event.featured_event_id}/confirmation`);
                     return;
                 }

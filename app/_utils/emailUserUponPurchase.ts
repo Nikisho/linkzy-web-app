@@ -9,6 +9,16 @@ async function generateQRCodeBase64(value: string) {
 };
 export const emailUserUponPurchase = async (user_id: number, event: Event, user:User) => {
     try {
+        // const { error, data:booking } = await supabase 
+        //     .from('featured_event_bookings')
+        //     .select()
+        //     .eq('user_id', user_id)
+        //     .eq('featured_event_id', event.featured_event_id)
+        // if (booking && booking.length === 0 ) {
+        //     console.log('No booking')
+        //     return;
+        // }
+        
         const edge_function_base_url =
             "https://wffeinvprpdyobervinr.supabase.co/functions/v1/ticket-purchase-email";
         const qrValue =

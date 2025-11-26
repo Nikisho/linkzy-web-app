@@ -21,7 +21,7 @@ export default function StripePayment({
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-
+    const [userId, setUserId] = useState(null);
     const handleStripeCheckout = async (): Promise<void> => {
 
         setLoading(true);
@@ -40,7 +40,7 @@ export default function StripePayment({
                 throw new Error('Event information is incomplete');
             }
 
-            if ( selectedTicket.price <= 0) {
+            if (selectedTicket.price <= 0) {
                 throw new Error('Invalid ticket price');
             }
 
@@ -106,14 +106,15 @@ export default function StripePayment({
 
             // Send confirmation email if user_id is provided
             if (data.user_id) {
-                try {
-                    await emailUserUponPurchase(data.user_id, event, user);
-                    console.log('Confirmation email sent successfully');
-                } catch (emailError) {
-                    // Don't throw error for email failures - payment was still successful
-                    console.warn('Failed to send confirmation email:', emailError);
-                    // You might want to show a non-blocking warning to the user
-                }
+                setUserId(data.user_id)
+                // try {
+                //     await emailUserUponPurchase(data.user_id, event, user);
+                //     console.log('Confirmation email sent successfully');
+                // } catch (emailError) {
+                //     // Don't throw error for email failures - payment was still successful
+                //     console.warn('Failed to send confirmation email:', emailError);
+                //     // You might want to show a non-blocking warning to the user
+                // }
             } else {
                 console.warn('No user_id received for sending confirmation email');
             }
@@ -145,18 +146,33 @@ export default function StripePayment({
 
     return (
         <Modal open={open} onClose={() => setOpen(false)}>
-            <Box>
+            <Box className="relative">
                 {
                     clientSecret && !loading && (
                         <div
                             className={`fixed inset-0 xl:inset-auto xl:inset-y-0 z-50 bg-white text-black overflow-y-auto 
-                            w-full xl:w-1/3 mx-auto p-4
-                            ${loading ? 'opacity-30' : ''}`}
+                    w-full xl:w-1/3 mx-auto p-4
+                    ${loading ? 'opacity-30' : ''}`}
                         >
                             <div className="mt-10">
                                 <Elements stripe={stripePromise} options={{ clientSecret: clientSecret }}>
-                                    <CheckoutForm />
+                                    <CheckoutForm 
+                                        user_id={userId!}
+                                    />
                                 </Elements>
+                            </div>
+                        </div>
+                    )
+                }
+                {
+                    loading && (
+                        <div className=" flex items-center justify-center bg-opacity-80 h-screen z-10 xl:w-1/3">
+                            <div className="flex flex-col items-center">
+                                {/* Spinner */}
+                                <div className="w-12 h-12 border-4 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
+
+                                {/* Caption */}
+                                <p className="text-lg font-semibold">Redirecting to payment...</p>
                             </div>
                         </div>
                     )
