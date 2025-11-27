@@ -9,6 +9,7 @@ import { supabaseAdmin } from "../_utils/supabase.ts";
 import { checkExistingUser } from "../_utils/checkExistingUser.ts";
 import { insertUser } from "../_utils/insertUser.ts";
 import { checkExistingBooking } from "../_utils/checkExistingBooking.ts";
+import { PaymentIntentParamsProps } from "../_utils/db_types.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,7 +49,26 @@ Deno.serve(async (req) => {
     );
 
     if (existing) return existing;
-    const paymentIntent = await stripe.paymentIntents.create({
+
+      const fetchStripeAccountId = async () => {
+      const { data, error } = await supabaseAdmin
+        .from("organizers")
+        .select("stripe_account_id")
+        .eq("organizer_id", event.organizer_id)
+        .single();
+      if (data) {
+        return data.stripe_account_id;
+      }
+      if (error) {
+        throw error.message;
+      }
+    };
+    const stripe_account_id = await fetchStripeAccountId();
+
+    console.log('🎉stripe account ID :', stripe_account_id);
+    const platformFee =  0 //Math.round(amount * 0.03); 
+
+    const paymentIntentParams: PaymentIntentParamsProps = {
       amount: Math.round(selected_ticket.price * 100), // in cents
       currency: "gbp",
       automatic_payment_methods: {
@@ -63,8 +83,17 @@ Deno.serve(async (req) => {
         chat_room_id: event.chat_room_id,
         organizer_id: event.organizer_id,
       },
-    });
+    };
 
+    const PLATFORM_ORGANIZER_ID = 1;
+    if (event.organizer_id !== PLATFORM_ORGANIZER_ID ) {
+      paymentIntentParams.transfer_data = {
+        destination: stripe_account_id,
+      };
+      paymentIntentParams.application_fee_amount = platformFee;
+    }
+
+    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
     console.log("Payment Created :", paymentIntent);
 
     return new Response(

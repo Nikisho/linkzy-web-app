@@ -38,9 +38,9 @@ export interface Database {
 }
 
 export interface PaymentIntentParamsProps {
-      amount: string,
+      amount: number,
       currency: string,
-      customer: string,
+      // customer: string,
       automatic_payment_methods: {
         enabled: boolean,
       },

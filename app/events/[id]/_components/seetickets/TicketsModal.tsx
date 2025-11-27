@@ -39,7 +39,7 @@ function TicketsModal({
                         <div className="space-y-4 p-4">
                             {event?.ticket_types?.map((type) => {
                                 const now = new Date();
-                                const soldOut = type.quantity === 0;
+                                const soldOut = type.quantity <= type.tickets_sold;
                                 const hasSalesEnded = new Date(type.sales_end).getTime() <= now.getTime();
                                 const salesNotStarted = new Date(type.sales_start).getTime() > now.getTime();
                                 return (
@@ -79,7 +79,7 @@ function TicketsModal({
                                                 : "bg-black text-white active:scale-[0.98] transition duration-300"
                                                 }`}
                                         >
-                                            {soldOut ? "Sold Out" : (hasSalesEnded ? 'Sales Ended' : (salesNotStarted ? 'Sales Not Started' : 'Select'))}
+                                            {soldOut ? "Sold out" : (hasSalesEnded ? 'Sales ended' : (salesNotStarted ? 'Sales not started' : 'Select'))}
                                         </button>
                                     </div>
                                 );
