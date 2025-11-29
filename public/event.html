@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Opening Linkzy...</title>
+  <script>
+    window.onload = function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      const eventId = urlParams.get('featured_event_id');
+
+      if (eventId) {
+        const deepLink = `com.linkzy://featuredeventsevent?featured_event_id=${eventId}`;
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+        window.location.href = deepLink;
+
+        // Fallback after a few seconds if deep link fails
+        setTimeout(() => {
+          // Android
+          if (/android/i.test(userAgent)) {
+            window.location.href = "https://play.google.com/store/apps/details?id=com.linkzy";
+          }
+          if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+            window.location.href = "https://apps.apple.com/us/app/linkzy/id6720764102";
+          }
+          else {
+            document.getElementById('fallback').style.display = 'block';
+          }
+        }, 3000);
+      } else {
+        document.getElementById('error').style.display = 'block';
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Opening in Linkzy...</h1>
+  <p id="fallback" style="display: none;">
+    Not opening? <a id="manualLink" href="#">Tap here to open in the app</a>
+  </p>
+  <p id="error" style="display: none; color: red;">
+    Invalid or missing event ID.
+  </p>
+
+  <script>
+    // Optional: set manual link href after loading
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('featured_event_id');
+    if (eventId) {
+      document.getElementById('manualLink').href = `com.linkzy://featuredeventsevent?featured_event_id=${eventId}`;
+    } else {
+      document.getElementById('manualLink').href = `com.linkzy://`;
+    }
+  </script>
+</body>
+</html>

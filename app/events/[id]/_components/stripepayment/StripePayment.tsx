@@ -8,7 +8,6 @@ import { TicketTypes } from '../../_types/TicketTypes';
 import { Event } from '@/app/_types/Event';
 import CheckoutForm from './CheckoutForm';
 import supabase from '@/supabase';
-import { emailUserUponPurchase } from '@/app/_utils/emailUserUponPurchase';
 
 export default function StripePayment({
     open,
@@ -141,8 +140,6 @@ export default function StripePayment({
         if (!open) return;
         handleStripeCheckout();
     }, [open]);
-
-    console.log('Secret received: ', clientSecret);
 
     return (
         <Modal open={open} onClose={() => setOpen(false)}>

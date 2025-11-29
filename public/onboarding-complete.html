@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting...</title>
+  <script>
+    window.onload = function() {
+      // Attempt to open the app via deep link
+      window.location.href = "com.linkzy://organizeronboarding";
+
+      // If app not installed, show manual link after short delay
+      setTimeout(() => {
+        document.getElementById('manualLink').href = "com.linkzy://";
+        document.getElementById('manualContainer').style.display = 'block';
+      }, 1500);
+    };
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    #manualContainer {
+      display: none;
+      margin-top: 20px;
+    }
+    a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <h1>Redirecting you back to Linkzy...</h1>
+  <div id="manualContainer">
+    <p>If you’re not redirected automatically, tap below:</p>
+    <a id="manualLink" href="#">Open Linkzy</a>
+  </div>
+</body>
+</html>
