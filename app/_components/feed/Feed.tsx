@@ -10,6 +10,7 @@ async function Feed() {
                 .from('featured_events')
                 .select(`*, ticket_types(*), organizers(*, users(*))`)
                 .order('date', { ascending: false })
+                .neq('test', true)
             if (data) {
                 return data;
             }

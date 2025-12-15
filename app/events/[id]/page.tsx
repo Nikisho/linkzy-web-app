@@ -89,17 +89,19 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                         </div>
                         <div className='my-3'>
                             <p className='text-2xl'>Promoter</p>
-                            <div className='flex space-x-5 my-3 items-center '>
+                            <div className='flex space-x-2 my-3 items-center '>
 
                                 {
                                     event?.organizers?.users.photo ?
-                                        <Image
-                                            src={event?.organizers?.users.photo}
-                                            width={40}
-                                            height={50}
-                                            alt={event.organizers.users.id}
-                                            className='rounded-full'
-                                        /> :
+                                        <div className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
+                                            <Image
+                                                src={event?.organizers?.users.photo}
+                                                alt={event.organizers.users.id}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        :
                                         <div
                                             className='flex justify-center'
                                             style={{
@@ -123,7 +125,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                 </p>
 
                             </div>
-                            <SeeTickets 
+                            <SeeTickets
                                 // ticket_types={event.ticket_types}
                                 event={event}
                             />
