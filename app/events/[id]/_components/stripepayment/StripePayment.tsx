@@ -17,7 +17,7 @@ export default function StripePayment({
     event
 }: { open: boolean, setOpen: (bool: boolean) => void, user: User, selectedTicket: TicketTypes, event: Event }) {
 
-    const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+    const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_PROD!);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [userId, setUserId] = useState(null);
