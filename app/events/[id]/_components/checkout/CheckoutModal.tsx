@@ -154,12 +154,12 @@ function CheckoutModal({
 
                 if (user_id) {
                     // emailUserUponPurchase(user_id, event, user);
-                    push(`/events/${event.featured_event_id}/confirmation?userid=${user_id}`);
+                    push(`/events/${event.featured_event_id}/confirmation?userid=${user_id.user_id}`);
                     return;
                 }
                 setSuccess(true);
                 if (success) {
-                    push(`/events/${event.featured_event_id}/confirmation?userid=${user_id}`);
+                    push(`/events/${event.featured_event_id}/confirmation?userid=${user_id.user_id}`);
                     return;
                 }
             } else {
