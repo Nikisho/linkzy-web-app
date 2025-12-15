@@ -9,6 +9,7 @@ async function Feed() {
             const { data, error } = await supabase
                 .from('featured_events')
                 .select(`*, ticket_types(*), organizers(*, users(*))`)
+                .order('date', { ascending: false })
             if (data) {
                 return data;
             }
