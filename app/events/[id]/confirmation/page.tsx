@@ -7,7 +7,6 @@ export default async function ConfirmationPage(
 ) {
     const { userid } = await searchParams;
     const { id } = await params;
-    console.log(userid, id );
     async function fetchEventData() {
         const { data, error } = await supabase
             .from("featured_events")

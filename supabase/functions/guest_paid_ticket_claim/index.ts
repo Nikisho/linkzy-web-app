@@ -50,23 +50,29 @@ Deno.serve(async (req) => {
 
     if (existing) return existing;
 
-      const fetchStripeAccountId = async () => {
+    const fetchStripeAccountId = async () => {
       const { data, error } = await supabaseAdmin
         .from("organizers")
-        .select("stripe_account_id")
+        .select("stripe_account_id, platform_fee_discount_pct")
         .eq("organizer_id", event.organizer_id)
         .single();
       if (data) {
-        return data.stripe_account_id;
+        return data;
       }
       if (error) {
         throw error.message;
       }
     };
-    const stripe_account_id = await fetchStripeAccountId();
+    // const stripe_account_id = await fetchStripeAccountId();
 
-    console.log('🎉stripe account ID :', stripe_account_id);
-    const platformFee =  0 //Math.round(amount * 0.03); 
+    const organizer = await fetchStripeAccountId();
+
+    console.log("🎉stripe account ID :", organizer.stripe_account_id);
+
+    const priceInPence = Math.round(selected_ticket.price * 100);
+    const baseFee = Math.round(priceInPence * 0.035) + 20;
+    const discountPct = organizer.platform_fee_discount_pct ?? 0;
+    const platformFeeInPence = Math.round(baseFee * (1 - discountPct / 100));
 
     const paymentIntentParams: PaymentIntentParamsProps = {
       amount: Math.round(selected_ticket.price * 100), // in cents
@@ -86,14 +92,16 @@ Deno.serve(async (req) => {
     };
 
     const PLATFORM_ORGANIZER_ID = 1;
-    if (event.organizer_id !== PLATFORM_ORGANIZER_ID ) {
+    if (event.organizer_id !== PLATFORM_ORGANIZER_ID) {
       paymentIntentParams.transfer_data = {
-        destination: stripe_account_id,
+        destination: organizer.stripe_account_id,
       };
-      paymentIntentParams.application_fee_amount = platformFee;
+      paymentIntentParams.application_fee_amount = platformFeeInPence;
     }
 
-    const paymentIntent = await stripe.paymentIntents.create(paymentIntentParams);
+    const paymentIntent = await stripe.paymentIntents.create(
+      paymentIntentParams,
+    );
     console.log("Payment Created :", paymentIntent);
 
     return new Response(
