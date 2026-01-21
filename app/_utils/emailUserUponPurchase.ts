@@ -12,7 +12,7 @@ export const emailUserUponPurchase = async (
     event: Event,
     user: User,
 ) => {
-    try {
+    // try {
         const {
             error: confirmation_email_sent_error,
             data: confirmation_email_sent,
@@ -70,8 +70,8 @@ export const emailUserUponPurchase = async (
         //     return;
         // }
 
-        const data = await response.json();
-        console.log("✅ Function response:", data);
+        // const data = await response.json();
+        // console.log("✅ Function response:", data);
 
         const { error: update_confirmation_email_sent_error } = await supabase
             .from("featured_event_bookings")
@@ -84,7 +84,7 @@ export const emailUserUponPurchase = async (
         if (update_confirmation_email_sent_error) {
             console.error(update_confirmation_email_sent_error.message);
         }
-    } catch (error: any) {
-        console.error("Error booking event:", error.message);
-    }
+    // } catch (error: any) {
+    //     console.error("Error booking event:", error.message);
+    // }
 };

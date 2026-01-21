@@ -65,7 +65,7 @@ function CheckoutModal({
                 .eq('user_id', user_id.id)
                 .eq('featured_event_id', event.featured_event_id)
             if (error) {
-                console.error('Error fetching booking ' , error.message);
+                console.error('Error fetching booking ', error.message);
             }
             if (booking && booking.length > 0) {
                 return true;
@@ -174,6 +174,13 @@ function CheckoutModal({
         }
     };
 
+    if (loading) {
+        return (
+            <div className="fixed inset-0 z-100 flex items-center justify-center bg-white/70">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-900" />
+            </div>
+        );
+    }
     return (
         <>
             {
