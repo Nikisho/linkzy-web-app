@@ -65,10 +65,10 @@ export const emailUserUponPurchase = async (
             }),
         });
 
-        if (!response.ok) {
-            console.error("❌ Email function failed:", await response.text());
-            return;
-        }
+        // if (!response.ok) {
+        //     console.error("❌ Email function failed:", await response.text());
+        //     return;
+        // }
 
         const data = await response.json();
         console.log("✅ Function response:", data);
