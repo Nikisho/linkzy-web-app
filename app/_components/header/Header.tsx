@@ -49,7 +49,7 @@ function Header() {
                         </a>
                     ))}
                     <div className='bg-white p-2  px-4 rounded-full text-black'>
-                        <a href='download'>
+                        <a href='/download'>
                             Download Linkzy
                         </a>
                     </div>
@@ -72,7 +72,7 @@ function Header() {
                             </div>
                         ))}
                         <div className='bg-black p-1 px-4 mx-2 my-2 font-bold rounded-full text-white'>
-                            <a href='download'>
+                            <a href='/download'>
                                 Download Linkzy
                             </a>
                         </div>
