@@ -188,165 +188,167 @@ function CheckoutModal({
 
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <Box>
-                            <div className={`bg-white mb-20 text-black fixed inset-0 z-50 overflow-y-auto xl:w-1/3 {${loading && 'opacity-30'}}`}>
-
+                            <div className={`bg-white text-black fixed inset-0 z-50 xl:w-1/3 flex flex-col mb-20 {${loading && 'opacity-30'}}`}>
                                 {/* Close Button */}
-                                <button
-                                    onClick={() => setOpen(false)}
-                                    className="absolute top-3 right-3 p-2"
-                                >
-                                    <CloseIcon fontSize="large" />
-                                </button>
+                                <div className="flex-1 overflow-y-auto">
 
-                                {/* Event Image */}
-                                <div className="w-full h-48 overflow-hidden">
-                                    <img
-                                        src={event.image_url}
-                                        alt={event.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <div className="xl:hidden">
+                                    <button
+                                        onClick={() => setOpen(false)}
+                                        className="absolute top-3 right-3 p-2"
+                                    >
+                                        <CloseIcon fontSize="large" />
+                                    </button>
+
+                                    {/* Event Image */}
+                                    <div className="w-full h-48 overflow-hidden">
+                                        <img
+                                            src={event.image_url}
+                                            alt={event.title}
+                                            className="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="xl:hidden">
+                                        {
+                                            success && (
+                                                <div className="bg-green-100 text-green-800 p-3 rounded-md text-sm">
+                                                    Booking successful. A confirmation email has been sent.
+                                                </div>
+                                            )
+                                        }
+                                        {
+                                            serverError && (
+                                                <div className="bg-red-100  text-red-800 p-3 rounded-md  text-sm">
+                                                    {serverError}
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                    {/* Event Info */}
+                                    <div className="p-4">
+                                        <h1 className="text-xl font-semibold">{event.title}</h1>
+                                        <p className="text-sm text-gray-600 mt-1">{formatDateShortWeekday(event.date)}</p>
+                                        <p className="text-sm text-gray-600">{event.location}</p>
+                                        <p className="text-sm text-gray-500 mt-2">
+                                            Hosted by {event.organizers.users.name}
+                                        </p>
+                                    </div>
+
+                                    {/* Contact Information */}
+                                    <div className="p-4">
+                                        <h2 className="text-lg font-semibold mb-3">Contact Information</h2>
+
+                                        <div>
+                                            <label className="text-sm font-medium">Full Name</label>
+                                            <input
+                                                type="text"
+                                                className={`w-full border rounded-md px-3 py-2 mt-1 ${errors.name ? "border-red-500" : "border-gray-300"
+                                                    }`}
+                                                placeholder="Your name"
+                                                value={user.name}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setUser(prev => ({ ...prev, name: value }));
+                                                    setErrors(prev => ({ ...prev, name: validateName(value) }));
+                                                }}
+                                                onBlur={(e) =>
+                                                    setErrors(prev => ({ ...prev, name: validateName(e.target.value) }))
+                                                }
+                                            />
+                                            {errors.name && (
+                                                <p className="text-red-600 text-xs mt-1">{errors.name}</p>
+                                            )}
+                                        </div>
+
+                                        <div>
+                                            <label className="text-sm font-medium">Email</label>
+                                            <input
+                                                type="email"
+                                                className={`w-full border rounded-md px-3 py-2 mt-1 ${errors.email ? "border-red-500" : "border-gray-300"
+                                                    }`}
+                                                placeholder="your@email.com"
+                                                value={user.email}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setUser(prev => ({ ...prev, email: value }));
+                                                    setErrors(prev => ({ ...prev, email: validateEmail(value) }));
+                                                }}
+                                                onBlur={(e) =>
+                                                    setErrors(prev => ({ ...prev, email: validateEmail(e.target.value) }))
+                                                }
+                                            />
+                                            {errors.email && (
+                                                <p className="text-red-600 text-xs mt-1">{errors.email}</p>
+                                            )}
+                                        </div>
+                                        <div>
+                                            <label className="text-sm font-medium">Confirm Email</label>
+                                            <input
+                                                type="email"
+                                                className={`w-full border rounded-md px-3 py-2 mt-1 ${errors.confirmEmail ? "border-red-500" : "border-gray-300"
+                                                    }`}
+                                                placeholder="Re-enter your email"
+                                                value={user.confirmEmail}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setUser(prev => ({ ...prev, confirmEmail: value }));
+                                                    setErrors(prev => ({
+                                                        ...prev,
+                                                        confirmEmail: validateConfirmEmail(user.email, value),
+                                                    }));
+                                                }}
+                                                onBlur={(e) =>
+                                                    setErrors(prev => ({
+                                                        ...prev,
+                                                        confirmEmail: validateConfirmEmail(user.email, e.target.value),
+                                                    }))
+                                                }
+                                            />
+                                            {errors.confirmEmail && (
+                                                <p className="text-red-600 text-xs mt-1">{errors.confirmEmail}</p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Ticket Summary */}
+                                    <div className="p-4 mb-10">
+                                        <h2 className="text-lg font-semibold mb-3 h-1/4">Your Ticket</h2>
+
+                                        <div
+                                            key={selectedTicket.ticket_type_id}
+                                            className="border border-gray-200 p-3 rounded-lg mb-3"
+                                        >
+                                            <p className="font-medium">{selectedTicket.name}</p>
+                                            <p className="text-sm mt-1 text-gray-500">{selectedTicket.description}</p>
+                                            <p className="text-sm mt-2 font-semibold">
+                                                {selectedTicket.price.toString() === '0' ? "Free" : `£${selectedTicket.price}`}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {
+                                        loading && (
+                                            <div className="flex justify-center py-4">
+                                                <div className="h-6 w-6 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
+                                            </div>
+                                        )
+                                    }
                                     {
                                         success && (
-                                            <div className="bg-green-100 text-green-800 p-3 rounded-md text-sm">
+                                            <div className="hidden xl:flex bg-green-100 text-green-800 p-3 rounded-md my-3 text-sm">
                                                 Booking successful. A confirmation email has been sent.
                                             </div>
                                         )
                                     }
                                     {
                                         serverError && (
-                                            <div className="bg-red-100  text-red-800 p-3 rounded-md  text-sm">
+                                            <div className="hidden xl:flex bg-red-100  text-red-800 p-3 rounded-md my-3 text-sm">
                                                 {serverError}
                                             </div>
                                         )
                                     }
                                 </div>
-                                {/* Event Info */}
-                                <div className="p-4">
-                                    <h1 className="text-xl font-semibold">{event.title}</h1>
-                                    <p className="text-sm text-gray-600 mt-1">{formatDateShortWeekday(event.date)}</p>
-                                    <p className="text-sm text-gray-600">{event.location}</p>
-                                    <p className="text-sm text-gray-500 mt-2">
-                                        Hosted by {event.organizers.users.name}
-                                    </p>
-                                </div>
-
-                                {/* Contact Information */}
-                                <div className="p-4">
-                                    <h2 className="text-lg font-semibold mb-3">Contact Information</h2>
-
-                                    <div>
-                                        <label className="text-sm font-medium">Full Name</label>
-                                        <input
-                                            type="text"
-                                            className={`w-full border rounded-md px-3 py-2 mt-1 ${errors.name ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                            placeholder="Your name"
-                                            value={user.name}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setUser(prev => ({ ...prev, name: value }));
-                                                setErrors(prev => ({ ...prev, name: validateName(value) }));
-                                            }}
-                                            onBlur={(e) =>
-                                                setErrors(prev => ({ ...prev, name: validateName(e.target.value) }))
-                                            }
-                                        />
-                                        {errors.name && (
-                                            <p className="text-red-600 text-xs mt-1">{errors.name}</p>
-                                        )}
-                                    </div>
-
-                                    <div>
-                                        <label className="text-sm font-medium">Email</label>
-                                        <input
-                                            type="email"
-                                            className={`w-full border rounded-md px-3 py-2 mt-1 ${errors.email ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                            placeholder="your@email.com"
-                                            value={user.email}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setUser(prev => ({ ...prev, email: value }));
-                                                setErrors(prev => ({ ...prev, email: validateEmail(value) }));
-                                            }}
-                                            onBlur={(e) =>
-                                                setErrors(prev => ({ ...prev, email: validateEmail(e.target.value) }))
-                                            }
-                                        />
-                                        {errors.email && (
-                                            <p className="text-red-600 text-xs mt-1">{errors.email}</p>
-                                        )}
-                                    </div>
-                                    <div>
-                                        <label className="text-sm font-medium">Confirm Email</label>
-                                        <input
-                                            type="email"
-                                            className={`w-full border rounded-md px-3 py-2 mt-1 ${errors.confirmEmail ? "border-red-500" : "border-gray-300"
-                                                }`}
-                                            placeholder="Re-enter your email"
-                                            value={user.confirmEmail}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                setUser(prev => ({ ...prev, confirmEmail: value }));
-                                                setErrors(prev => ({
-                                                    ...prev,
-                                                    confirmEmail: validateConfirmEmail(user.email, value),
-                                                }));
-                                            }}
-                                            onBlur={(e) =>
-                                                setErrors(prev => ({
-                                                    ...prev,
-                                                    confirmEmail: validateConfirmEmail(user.email, e.target.value),
-                                                }))
-                                            }
-                                        />
-                                        {errors.confirmEmail && (
-                                            <p className="text-red-600 text-xs mt-1">{errors.confirmEmail}</p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Ticket Summary */}
-                                <div className="p-4">
-                                    <h2 className="text-lg font-semibold mb-3">Your Ticket</h2>
-
-                                    <div
-                                        key={selectedTicket.ticket_type_id}
-                                        className="border border-gray-200 p-3 rounded-lg mb-3"
-                                    >
-                                        <p className="font-medium">{selectedTicket.name}</p>
-                                        <p className="text-sm mt-1 text-gray-500">{selectedTicket.description}</p>
-                                        <p className="text-sm mt-2 font-semibold">
-                                            {selectedTicket.price.toString() === '0' ? "Free" : `£${selectedTicket.price}`}
-                                        </p>
-                                    </div>
-                                </div>
-                                {
-                                    loading && (
-                                        <div className="flex justify-center py-4">
-                                            <div className="h-6 w-6 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
-                                        </div>
-                                    )
-                                }
-                                {
-                                    success && (
-                                        <div className="hidden xl:flex bg-green-100 text-green-800 p-3 rounded-md my-3 text-sm">
-                                            Booking successful. A confirmation email has been sent.
-                                        </div>
-                                    )
-                                }
-                                {
-                                    serverError && (
-                                        <div className="hidden xl:flex bg-red-100  text-red-800 p-3 rounded-md my-3 text-sm">
-                                            {serverError}
-                                        </div>
-                                    )
-                                }
 
                                 {/* Checkout Button (Sticky Bottom) */}
-                                <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98]">
+                                <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98] ">
                                     <button
                                         onClick={() => { selectedTicket.price.toString() === '0' ? handleFreeCheckout() : openStripePaymentModal() }}
                                         className="w-full bg-black text-white py-3 rounded-lg font-semibold"
