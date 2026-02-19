@@ -12,7 +12,7 @@ export default function Description({
     return (
         <div className='my-3 bg-radial-[at_25%_25%] from-gray-800 to-zinc-900 to-75% p-3 rounded-2xl'>
             <p className='text-2xl my-2 truncate'>About</p>
-            <p>
+            <p className='whitespace-pre-line'>
                 {shown}
             </p>
             {isLong && (
