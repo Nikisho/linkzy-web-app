@@ -3,13 +3,29 @@ import Image from 'next/image';
 import { Event } from '@/app/_types/Event';
 import formatDateShortWeekday from '@/app/_utils/formatDateShortWeekday';
 import { getLowestPrice } from '@/app/_utils/getLowetPrice';
+import { headers } from 'next/headers';
+
+
+
 async function Feed() {
+
+    async function getCountry() {
+        const headersList = await headers();
+        const country = headersList.get("x-vercel-ip-country") || "GB";
+        console.log('We get: ', country)
+        return country;
+    }
+
     const fetchEvents = async () => {
+
+        const country_code = await getCountry();
+
         try {
             const { data, error } = await supabase
                 .from('featured_events')
                 .select(`*, ticket_types(*), organizers(*, users(*))`)
                 .order('date', { ascending: false })
+                .eq('country_code', country_code)
                 .neq('test', true)
             if (data) {
                 return data;
