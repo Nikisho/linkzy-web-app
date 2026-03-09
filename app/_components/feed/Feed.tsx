@@ -11,7 +11,7 @@ async function Feed() {
 
     async function getCountry() {
         const headersList = await headers();
-        const country = headersList.get("x-vercel-ip-country") || "GB";
+        const country = headersList.get("x-vercel-ip-country") //|| "GB";
         console.log('We get: ', country)
         return country;
     }
