@@ -9,16 +9,9 @@ import { headers } from 'next/headers';
 
 async function Feed() {
 
-    async function getCountry() {
-        const headersList = await headers();
-        const country = headersList.get("x-vercel-ip-country") //|| "GB";
-        console.log('We get: ', country)
-        return country;
-    }
-
     const fetchEvents = async () => {
-
-        const country_code = await getCountry();
+        const headersList = await headers();
+        const country_code = headersList.get("x-vercel-ip-country") ?? "GB";
 
         try {
             const { data, error } = await supabase
