@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
 
     const paymentIntentParams: PaymentIntentParamsProps = {
       amount: Math.round(selected_ticket.price * 100), // in cents
-      currency: "gbp",
+      currency: ticket.currency_code,
       automatic_payment_methods: {
         enabled: true,
       },
