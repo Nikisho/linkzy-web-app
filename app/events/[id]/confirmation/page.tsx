@@ -36,8 +36,8 @@ export default async function ConfirmationPage(
     const event = await fetchEventData();
     const user = await fetchUserData();
 
-    await emailUserUponPurchase(Number(userid), event, user)
-
+    // await emailUserUponPurchase(Number(userid), event, user)
+    console.log("Email skipped", event);
     return (
         <div className="flex justify-center px-4 py-10">
             <div className="w-full max-w-xl bg-white rounded-xl shadow p-8">

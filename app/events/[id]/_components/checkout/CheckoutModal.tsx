@@ -9,7 +9,8 @@ import supabase from "@/supabase";
 import { useRouter } from "next/navigation";
 import StripePayment from "../stripepayment/StripePayment";
 import { User } from "../../_types/User";
-
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import AddcircleIcon from '@mui/icons-material/AddCircle';
 
 function CheckoutModal({
     open,
@@ -29,6 +30,9 @@ function CheckoutModal({
     const [serverError, setServerError] = useState("");
     const { push } = useRouter();
     const [openStripeModal, setOpenStripeModal] = useState(false);
+    const [ticketQuantity, setTicketQuantity] = useState(1);
+    const isFree = selectedTicket?.price.toString() === '0';
+    const subtotal = selectedTicket?.price * ticketQuantity;
     const validateName = (value: string) => {
         if (!value.trim()) return "Name is required";
         if (value.trim().length < 2) return "Name must be at least 2 characters";
@@ -36,6 +40,11 @@ function CheckoutModal({
             return "Invalid name format";
         return "";
     };
+
+    function formatPrice(value: any) {
+        return Number(value).toFixed(2);
+    };
+
 
     const validateEmail = (value: string) => {
         if (!value.trim()) return "Email is required";
@@ -311,19 +320,48 @@ function CheckoutModal({
 
                                     {/* Ticket Summary */}
                                     <div className="p-4 mb-10">
-                                        <h2 className="text-lg font-semibold mb-3 h-1/4">Your Ticket</h2>
+                                        <h2 className="text-lg font-semibold mb-2 h-1/4">Order</h2>
 
                                         <div
                                             key={selectedTicket.ticket_type_id}
-                                            className="border border-gray-200 p-3 rounded-lg mb-3"
+                                            className="border border-gray-200 p-3 rounded-lg mb-3 flex flex-row justify-between"
                                         >
-                                            <p className="font-medium">{selectedTicket.name}</p>
-                                            <p className="text-sm mt-1 text-gray-500">{selectedTicket.description}</p>
-                                            <p className="text-sm mt-2 font-semibold">
-                                                {selectedTicket.price.toString() === '0' ? "Free" : `£${selectedTicket.price}`}
-                                            </p>
+                                            <div>
+
+                                                <p className="font-medium">{selectedTicket.name}</p>
+                                                <p className="text-sm mt-1 text-gray-500">{selectedTicket.description}</p>
+                                                <p className="text-sm mt-2 font-semibold">
+                                                    {selectedTicket.price.toString() === '0' ? "Free" : `£${Number(selectedTicket.price).toFixed(2)}`}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-row items-center gap-3">
+
+                                                <RemoveCircleIcon
+                                                    fontSize="large"
+                                                    className={`text-blue-500 ${ticketQuantity === 1 && 'cursor-not-allowed text-gray-200'}`}
+                                                    onClick={() => setTicketQuantity(prev => prev > 1 ? prev - 1 : prev)}
+                                                />
+                                                <p className="text-lg font-semibold">
+                                                    {ticketQuantity}
+                                                </p>
+                                                <AddcircleIcon
+                                                    fontSize="large"
+                                                    className={`text-blue-500 ${ticketQuantity === 6 && 'cursor-not-allowed text-gray-200'}`}
+                                                    onClick={() => setTicketQuantity(prev => prev < 6 ? prev + 1 : prev)}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
+
+                                    {/* Total */}
+                                        <div className=" mx-5 p-4  flex justify-between items-center mt- pt-3 border-t">
+
+                                            <span className="font-semibold text-base">Total</span>
+
+                                            <span className="font-bold text-lg">
+                                                {isFree ? "Free" : `£${formatPrice(subtotal)}`}
+                                            </span>
+                                        </div>
                                     {
                                         loading && (
                                             <div className="flex justify-center py-4">
@@ -368,6 +406,8 @@ function CheckoutModal({
                 setOpen={setOpenStripeModal}
                 user={user}
                 selectedTicket={selectedTicket}
+                subtotal={subtotal}
+                quantity={ticketQuantity}
                 event={event}
             />
         </>

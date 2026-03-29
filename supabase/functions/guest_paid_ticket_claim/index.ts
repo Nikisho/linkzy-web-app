@@ -4,6 +4,7 @@
 
 // Setup type definitions for built-in Supabase Runtime APIs
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+//Ensure dev keys are used for local development
 import { stripe } from "../_utils/stripe.ts";
 import { supabaseAdmin } from "../_utils/supabase.ts";
 import { checkExistingUser } from "../_utils/checkExistingUser.ts";
@@ -23,7 +24,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { user, selected_ticket, event } = await req.json();
+    const { user, selected_ticket, event, quantity, subtotal } = await req.json();
 
     console.log("user received :", user);
 
@@ -69,19 +70,21 @@ Deno.serve(async (req) => {
 
     console.log("🎉stripe account ID :", organizer.stripe_account_id);
 
-    const priceInPence = Math.round(selected_ticket.price * 100);
-    const baseFee = Math.round(priceInPence * 0.035) + 20;
+    const priceInPence = Math.round(subtotal* 100);
+    const baseFee = Math.round(priceInPence * 0.030);
     const discountPct = organizer.platform_fee_discount_pct ?? 0;
     const platformFeeInPence = Math.round(baseFee * (1 - discountPct / 100));
 
     const paymentIntentParams: PaymentIntentParamsProps = {
-      amount: Math.round(selected_ticket.price * 100), // in cents
+      amount: Math.round(subtotal * 100), // in cents
       currency: ticket.currency_code,
       automatic_payment_methods: {
         enabled: true,
       },
       metadata: {
         user_id,
+        quantity: quantity,
+        subtotal: subtotal,
         featured_event_id: selected_ticket.featured_event_id,
         ticket_type_id: selected_ticket.ticket_type_id,
         tickets_sold: selected_ticket.tickets_sold,

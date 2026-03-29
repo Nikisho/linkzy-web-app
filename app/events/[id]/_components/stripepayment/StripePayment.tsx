@@ -14,8 +14,18 @@ export default function StripePayment({
     setOpen,
     user,
     selectedTicket,
+    subtotal,
+    quantity,
     event
-}: { open: boolean, setOpen: (bool: boolean) => void, user: User, selectedTicket: TicketTypes, event: Event }) {
+}: { 
+    open: boolean, 
+    setOpen: (bool: boolean) => void, 
+    user: User, 
+    selectedTicket: TicketTypes, 
+    subtotal: number,
+    quantity: number,
+    event: Event 
+}) {
 
     const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY_PROD!);
     const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -69,6 +79,8 @@ export default function StripePayment({
                             organizer_id: event.organizer_id,
                             chat_room_id: event.chat_room_id,
                         },
+                        quantity: quantity,
+                        subtotal: subtotal
                     },
                 }
             );
