@@ -104,6 +104,7 @@ function CheckoutModal({
         setOpenStripeModal(true);
     };
 
+    console.log('Selected :', ticketQuantity)
 
     const handleFreeCheckout = async () => {
         const existingBooking = await checkExistingBooking();
@@ -122,7 +123,6 @@ function CheckoutModal({
             setErrors({ name: nameErr, email: emailErr, confirmEmail: confirmErr });
             return;
         }
-
         try {
             setLoading(true);
             if (selectedTicket.price.toString() === '0') {
@@ -143,8 +143,9 @@ function CheckoutModal({
                                 title: event.title,
                                 organizer_id: event.organizer_id,
                                 location: event.location,
-                                chat_room_id: event.chat_room_id
-                            }
+                                chat_room_id: event.chat_room_id,
+                            },
+                            quantity: ticketQuantity
                         }
                     }
                 );
@@ -346,8 +347,8 @@ function CheckoutModal({
                                                 </p>
                                                 <AddcircleIcon
                                                     fontSize="large"
-                                                    className={`text-blue-500 ${ticketQuantity === 6 && 'cursor-not-allowed text-gray-200'}`}
-                                                    onClick={() => setTicketQuantity(prev => prev < 6 ? prev + 1 : prev)}
+                                                    className={`text-blue-500 ${ticketQuantity === 5 && 'cursor-not-allowed text-gray-200'}`}
+                                                    onClick={() => setTicketQuantity(prev => prev < 5 ? prev + 1 : prev)}
                                                 />
                                             </div>
                                         </div>

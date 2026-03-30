@@ -7,10 +7,10 @@
 import { supabaseAdmin } from "../_utils/supabase.ts";
 import { generateTicket } from "../_utils/generateTicket.ts";
 import { bookFeaturedEvent } from "../_utils/bookFeaturedEvent.ts";
-import { checkExistingBooking } from "../_utils/checkExistingBooking.ts"
+import { checkExistingBooking } from "../_utils/checkExistingBooking.ts";
 import { insertUser } from "../_utils/insertUser.ts";
 import { checkExistingUser } from "../_utils/checkExistingUser.ts";
-
+import { emailUserUponPurchase } from "../_utils/emailUserUponPurchase.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,11 +22,11 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
   try {
-    const { user, selected_ticket, event } = await req.json();
+    const { user, selected_ticket, event, quantity } = await req.json();
     let user_id;
 
     //Check ticket still exists
-    const { data: ticket, error: ticketErr } = await supabaseAdmin
+    const { data: ticket_type, error: ticketErr } = await supabaseAdmin
       .from("ticket_types")
       .select("*")
       .eq("ticket_type_id", selected_ticket.ticket_type_id)
@@ -49,24 +49,40 @@ Deno.serve(async (req) => {
     }
 
     //check user has booked
-    const existing = await checkExistingBooking(user_id, ticket.featured_event_id, corsHeaders);
+    const existing = await checkExistingBooking(
+      user_id,
+      ticket_type.featured_event_id,
+      corsHeaders,
+    );
     if (existing) return existing;
 
-    await bookFeaturedEvent(
-      user_id,
-      ticket.featured_event_id,
-      ticket.tickets_sold,
-      null,
-      event.chat_room_id,
-      ticket.ticket_type_id,
-    );
+    const tickets: { ticket_id: number; qr_code_link: string }[] = [];
 
-    //create a ticket, return success
-    await generateTicket(
+    for (let i = 0; i < quantity; i++) {
+      const ticketElement = await generateTicket(
+        user_id,
+        ticket_type.featured_event_id,
+        event.date,
+        ticket_type.ticket_type_id,
+      );
+
+      tickets.push(ticketElement!)
+      console.log('tickets are :', ticketElement)
+      await bookFeaturedEvent(
+        user_id,
+        ticket_type.featured_event_id,
+        ticket_type.tickets_sold,
+        null,
+        event.chat_room_id,
+        ticket_type.ticket_type_id,
+        quantity
+      );
+    }
+
+    await emailUserUponPurchase(
       user_id,
-      ticket.featured_event_id,
-      event.date,
-      ticket.ticket_type_id,
+      ticket_type.featured_event_id,
+      tickets
     );
 
     return new Response(
