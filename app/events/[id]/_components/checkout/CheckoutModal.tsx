@@ -129,7 +129,7 @@ function CheckoutModal({
             if (selectedTicket.price.toString() === '0') {
 
                 const { data: user_id, error, response } = await supabase.functions.invoke(
-                    'guest_free_ticket_claim_dev',
+                    'guest_free_ticket_claim',
                     {
                         body: {
                             user: { name: user.name, email: user.email },
