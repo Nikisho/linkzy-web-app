@@ -69,10 +69,11 @@ function CheckoutModal({
         if (user_id) {
 
             const { error, data: booking } = await supabase
-                .from('featured_event_bookings')
+                .from('tickets')
                 .select()
                 .eq('user_id', user_id.id)
                 .eq('featured_event_id', event.featured_event_id)
+                .eq('ticket_type_id', selectedTicket.ticket_type_id)
             if (error) {
                 console.error('Error fetching booking ', error.message);
             }
@@ -86,7 +87,7 @@ function CheckoutModal({
 
         const existingBooking = await checkExistingBooking();
         if (existingBooking) {
-            setServerError("You already have a booking for this event.");
+            setServerError("You have already purchased this ticket.");
             return;
         }
 
@@ -109,7 +110,7 @@ function CheckoutModal({
     const handleFreeCheckout = async () => {
         const existingBooking = await checkExistingBooking();
         if (existingBooking) {
-            setServerError("You already have a booking for this event.");
+            setServerError("You have already purchased this ticket.");
             return;
         }
         setServerError("");
@@ -128,7 +129,7 @@ function CheckoutModal({
             if (selectedTicket.price.toString() === '0') {
 
                 const { data: user_id, error, response } = await supabase.functions.invoke(
-                    'guest_free_ticket_claim',
+                    'guest_free_ticket_claim_dev',
                     {
                         body: {
                             user: { name: user.name, email: user.email },

@@ -52,11 +52,20 @@ Deno.serve(async (req) => {
     const existing = await checkExistingBooking(
       user_id,
       ticket_type.featured_event_id,
+      ticket_type.ticket_type_id,
       corsHeaders,
     );
     if (existing) return existing;
 
     const tickets: { ticket_id: number; qr_code_link: string }[] = [];
+    const booking_id = await bookFeaturedEvent(
+        user_id,
+        ticket_type.featured_event_id,
+        ticket_type.tickets_sold,
+        event.chat_room_id,
+        ticket_type.ticket_type_id,
+        quantity
+      );
 
     for (let i = 0; i < quantity; i++) {
       const ticketElement = await generateTicket(
@@ -68,15 +77,7 @@ Deno.serve(async (req) => {
 
       tickets.push(ticketElement!)
       console.log('tickets are :', ticketElement)
-      await bookFeaturedEvent(
-        user_id,
-        ticket_type.featured_event_id,
-        ticket_type.tickets_sold,
-        null,
-        event.chat_room_id,
-        ticket_type.ticket_type_id,
-        quantity
-      );
+
     }
 
     await emailUserUponPurchase(

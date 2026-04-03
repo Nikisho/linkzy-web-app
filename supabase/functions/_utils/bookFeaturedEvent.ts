@@ -4,7 +4,6 @@ export const bookFeaturedEvent = async (
     user_id: number,
     featured_event_id: number,
     tickets_sold: number,
-    ticket_transaction_id: number | null, 
     chat_room_id:number,
     ticket_type_id: number,
     quantity: number
@@ -15,7 +14,8 @@ export const bookFeaturedEvent = async (
             .insert({
                 user_id: user_id,
                 featured_event_id: featured_event_id,
-                ticket_transaction_id: ticket_transaction_id
+                ticket_type_id: ticket_type_id,
+                quantity: quantity
 
             })
         if (error) {

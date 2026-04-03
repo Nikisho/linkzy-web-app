@@ -3,14 +3,15 @@ import { supabaseAdmin } from "./supabase.ts";
 export const checkExistingBooking = async (
     user_id: number,
     featured_event_id: number,
-    corsHeaders: any,
+    ticket_type_id: number,
+    corsHeaders: any
 ): Promise<Response | null> => {
     console.log("Booking parameters received :", user_id, featured_event_id);
     const { data: existingBooking, error } = await supabaseAdmin
-        .from("featured_event_bookings")
+        .from("tickets")
         .select("*")
         .eq("user_id", user_id)
-        .eq("featured_event_id", featured_event_id)
+        .eq("ticket_type_id", ticket_type_id)
         .maybeSingle();
 
     if (error) {
@@ -48,7 +49,7 @@ export const checkExistingBooking = async (
     if (existingBooking) {
         return new Response(
             JSON.stringify({
-                error: "User already has a booking for this event",
+                error: "User already has a booking for this ticket type.",
                 booking_id: existingBooking.id,
             }),
             {

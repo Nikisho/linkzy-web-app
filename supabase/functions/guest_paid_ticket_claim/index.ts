@@ -46,6 +46,7 @@ Deno.serve(async (req) => {
     const existing = await checkExistingBooking(
       user_id,
       ticket.featured_event_id,
+      ticket.ticket_type_id,
       corsHeaders,
     );
 
