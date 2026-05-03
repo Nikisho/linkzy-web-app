@@ -1,9 +1,49 @@
 import supabase from '@/supabase';
 import Image from 'next/image';
-import React from 'react'
 import formatDateShortWeekday from '../_utils/formatDateShortWeekday';
 import { getLowestPrice } from '../_utils/getLowetPrice';
 import { Event } from '../_types/Event';
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: { organiserSlug: string } }): Promise<Metadata> {
+    const { organiserSlug } = await params;
+    const fetchOrganiser = async () => {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('name', decodeURIComponent(organiserSlug))
+            .single();
+
+        if (error) {
+            console.error('Error fetching organiser:', error);
+            return null;
+        }
+        return data;
+    };
+    const organiserData = await fetchOrganiser();
+    return {
+        title: organiserData.name,
+        description: organiserData.bio,
+        openGraph: {
+            title: organiserData.name,
+            description: organiserData.bio,
+            images: [
+                {
+                    url: organiserData.image_url,
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: organiserData.name,
+            description: organiserData.bio,
+            images: [organiserData.image_url],
+        },
+    };
+}
+
 
 async function OrganiserPage({ params }: { params: { organiserSlug: string } }) {
 
@@ -58,6 +98,7 @@ async function OrganiserPage({ params }: { params: { organiserSlug: string } }) 
     const organiserId = await fetchOrganiserId(organiserData.id);
     const organiserEvents = await fetchOrganiserEvents(organiserId.organizer_id);
 
+    // app/[organiserSlug]/page.tsx
 
     const RenderItem = ({ item }: { item: Event }) => {
         const formattedDate = formatDateShortWeekday(item.date);
