@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: { organiserSlug: st
             description: organiserData.bio,
             images: [
                 {
-                    url: organiserData.image_url,
+                    url: organiserData.photo,
                     width: 1200,
                     height: 630,
                 },
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: { organiserSlug: st
             card: "summary_large_image",
             title: organiserData.name,
             description: organiserData.bio,
-            images: [organiserData.image_url],
+            images: [organiserData.photo],
         },
     };
 }
