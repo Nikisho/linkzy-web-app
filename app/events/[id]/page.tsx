@@ -93,14 +93,14 @@ export default async function EventPage({ params }: { params: { id: string } }) 
 
                                 {
                                     event?.organizers?.users.photo ?
-                                        <div className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
+                                        <a href={`/${event?.organizers?.users.name}`} target='_blank' rel='noopener noreferrer' className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
                                             <Image
                                                 src={event?.organizers?.users.photo}
                                                 alt={event.organizers.users.id}
                                                 fill
                                                 className="object-cover"
                                             />
-                                        </div>
+                                        </a>
                                         :
                                         <div
                                             className='flex justify-center'
