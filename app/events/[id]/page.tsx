@@ -6,6 +6,52 @@ import Description from './_components/description/Description';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import Price from './_components/price/Price';
 import SeeTickets from './_components/seetickets/SeeTickets';
+import { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { id: number } }): Promise<Metadata> {
+    const { id } = await params;
+
+    const fetchEventData = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('featured_events')
+                .select(`*, organizers(*, users(*)), ticket_types(*)`)
+                .eq('featured_event_id', id)
+                .single();
+            if (data) {
+                return data;
+            }
+            if (error) {
+                console.error(error.message);
+            }
+        } catch (error) {
+            throw error
+        }
+    };
+    const event = await fetchEventData();
+    return {
+        title: event.title,
+        description: event.description,
+        openGraph: {
+            title: event.title,
+            description: event.description,
+            images: [
+                {
+                    url: event.image_url,
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title: event.title,
+            description: event.description,
+            images: [event.image_url],
+        },
+    };
+}
+
 export default async function EventPage({ params }: { params: { id: string } }) {
     const { id } = await params;
     const fetchEventData = async () => {
