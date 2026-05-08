@@ -185,13 +185,6 @@ function CheckoutModal({
         }
     };
 
-    if (loading) {
-        return (
-            <div className="fixed inset-0 z-100 flex items-center justify-center bg-white/70">
-                <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-900" />
-            </div>
-        );
-    }
     return (
         <>
             {
@@ -199,6 +192,11 @@ function CheckoutModal({
 
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <Box>
+                            { loading && (
+                                <div className="fixed inset-0 z-100 flex  xl:w-1/3 items-center justify-center bg-white/70">
+                                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-900" />
+                                </div>
+                            )}
                             <div className={`bg-white text-black fixed inset-0 z-50 xl:w-1/3 flex flex-col mb-20 {${loading && 'opacity-30'}}`}>
                                 {/* Close Button */}
                                 <div className="flex-1 overflow-y-auto">
@@ -356,14 +354,14 @@ function CheckoutModal({
                                     </div>
 
                                     {/* Total */}
-                                        <div className=" mx-5 p-4  flex justify-between items-center mt- pt-3 border-t">
+                                    <div className=" mx-5 p-4  flex justify-between items-center mt- pt-3 border-t">
 
-                                            <span className="font-semibold text-base">Total</span>
+                                        <span className="font-semibold text-base">Total</span>
 
-                                            <span className="font-bold text-lg">
-                                                {isFree ? "Free" : `£${formatPrice(subtotal)}`}
-                                            </span>
-                                        </div>
+                                        <span className="font-bold text-lg">
+                                            {isFree ? "Free" : `£${formatPrice(subtotal)}`}
+                                        </span>
+                                    </div>
                                     {
                                         loading && (
                                             <div className="flex justify-center py-4">
