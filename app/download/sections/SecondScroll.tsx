@@ -8,8 +8,8 @@ function SecondScroll() {
     return (
         <div 
             style={{backgroundColor: colours.primaryColour}}
-            className='h-screen flex flex-col justify-center 2xl:items-center'>
-            <div className='bg-black h-full xl:h-auto flex flex-col xl:flex-row  text-white'>
+            className='h-screen flex flex-col justify-center 2xl:items-center mb-100 xl:mb-0'>
+            <div className='bg-black h-full xl:h-auto flex flex-col md:flex-row  text-white'>
                 {/* Promotional Copy */}
                 <div className='w-full h-1/2 xl:h-auto xl:w-1/2 2xl:w-[60%] items-center flex flex-col justify-center px-5'>
                     <div className='space-y-3 '>
@@ -17,8 +17,9 @@ function SecondScroll() {
                         <p className='text-2xl font-'>
                             Struggling to keep your friendships close as life gets busier?
                         </p>
-                        <p className='text-2xl font-'>
-                            Don't let life's demands pull you apart—stay connected with Linkzy!
+                        
+                        <p className='text-2xl '>
+                            Discover African and Caribbean events near you, meet like-minded people, and create unforgettable memories!
                         </p>
                         <div className=' w-3/4 flex justify-start py-4 2xl:h-1/3 items-center rounded-xl'>
 
@@ -42,11 +43,11 @@ function SecondScroll() {
                         </div>
                     </div>
                 </div>
-                <div className='w-full xl:w-1/2 2xl:w-[40%] '>
+                <div className=' w-full xl:w-1/3 2xl:w-[25%]  '>
                     <Image
-                        src='/secondscrollmainimage.jpg'
-                        width={5100}
-                        height={1500}
+                        src='/secondscrollmainimage_new2.jpg'
+                        width={1000}
+                        height={500}
                         alt='secondscroll'
                     />
                 </div>

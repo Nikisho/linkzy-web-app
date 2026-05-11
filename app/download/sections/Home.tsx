@@ -35,9 +35,9 @@ const Home = () => {
 						in={open} orientation='vertical' timeout={2000}>
 						<div className='text-xl font-sans px-3 xl:p-0 self-center xl:w-full space-y-4'>
 							<p className='text-3xl font-bold'>No plans this weekend?</p>
-							<p className='text-2xl'>Meet Linkzy, the #1 app for connecting with others, scheduling events, and building lasting friendships!</p>
+							<p className='text-2xl'>Meet Linkzy, the #1 app for discovering, promoting, and attending African and Caribbean events and experiences!</p>
 							<p className='text-2xl'>
-								Download Linkzy and start making meaningful connections today.
+								Discover socials, networking events, parties, brunches, hobbies, and communities near you.
 							</p>
 						</div>
 						<div className='flex my-8 items-center space-y-3 flex-col xl:flex-row xl:space-x-5 xl:space-y-0'>

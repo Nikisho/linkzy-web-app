@@ -37,7 +37,7 @@ function ThirdScroll() {
             <div className='bg-black h-full xl:h-2/3 2xl:h-1/2 flex flex-col xl:flex-row '>
                 <div className='w-full xl:w-1/2 '>
                     <Image
-                        src='/thirdscrollmainimage.jpg'
+                        src='/thirdscrollmainimage_new.jpg'
                         width={5100}
                         height={1500}
                         alt='thirdscroll'
