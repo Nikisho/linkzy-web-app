@@ -29,6 +29,7 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
         }
     };
     const event = await fetchEventData();
+    const ogImageUrl = `${event.image_url}?width=1200&resize=contain&quality=70`;
     return {
         title: event.title,
         description: event.description,
@@ -37,7 +38,7 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
             description: event.description,
             images: [
                 {
-                    url: event.image_url,
+                    url: ogImageUrl,
                     width: 1200,
                     height: 630,
                 },
