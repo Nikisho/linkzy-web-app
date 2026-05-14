@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
             transform: {
                 width: 1200,
                 height: 630,
-                resize: "cover",
+                resize: "contain",
                 quality: 70,
             },
         });
