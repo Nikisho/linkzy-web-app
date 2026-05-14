@@ -28,8 +28,30 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
             throw error
         }
     };
+
+
     const event = await fetchEventData();
-    const ogImageUrl = `${event.image_url}?width=1200&resize=contain&quality=70`;
+
+    function getSupabaseStoragePath(publicUrl: string) {
+        const marker = "/storage/v1/object/public/your-bucket-name/";
+        return publicUrl.split(marker)[1];
+    }
+
+    const imagePath = getSupabaseStoragePath(event.image_url);
+
+    const { data } = supabase.storage
+        .from("featured_events")
+        .getPublicUrl(imagePath, {
+            transform: {
+                width: 1200,
+                height: 630,
+                resize: "cover",
+                quality: 70,
+            },
+        });
+
+    const ogImageUrl = data.publicUrl;
+
     return {
         title: event.title,
         description: event.description,
@@ -48,7 +70,7 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
             card: "summary_large_image",
             title: event.title,
             description: event.description,
-            images: [event.image_url],
+            images: [ogImageUrl],
         },
     };
 }
@@ -105,6 +127,12 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                             <p>
                                 Ends: {event.end_date && formatDateShortWeekday(event.end_date)}, {event.end_time && event.end_time.slice(0, -3)}
                             </p>
+
+
+                            <div className="pt-4 text-sm text-gray-500">
+                                <span className="font-medium">Refund policy:</span>{" "}
+                                {event.refund_policy || "No refunds"}
+                            </div>
                         </div>
 
                         <div className='xl:hidden flex space-x-2'>
