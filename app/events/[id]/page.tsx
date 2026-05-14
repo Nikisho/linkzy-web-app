@@ -29,29 +29,9 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
         }
     };
 
-
+    
     const event = await fetchEventData();
-
-    function getSupabaseStoragePath(publicUrl: string) {
-        const marker = "/storage/v1/object/public/your-bucket-name/";
-        return publicUrl.split(marker)[1];
-    }
-
-    const imagePath = getSupabaseStoragePath(event.image_url);
-
-    const { data } = supabase.storage
-        .from("featured_events")
-        .getPublicUrl(imagePath, {
-            transform: {
-                width: 1200,
-                height: 630,
-                resize: "cover",
-                quality: 70,
-            },
-        });
-
-    const ogImageUrl = data.publicUrl;
-
+    const ogImageUrl = `${event.image_url}?width=1200&resize=contain&quality=70`;
     return {
         title: event.title,
         description: event.description,
@@ -70,7 +50,7 @@ export async function generateMetadata({ params }: { params: { id: number } }): 
             card: "summary_large_image",
             title: event.title,
             description: event.description,
-            images: [ogImageUrl],
+            images: [event.image_url],
         },
     };
 }
