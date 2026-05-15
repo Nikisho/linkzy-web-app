@@ -72,7 +72,7 @@ function TicketsModal({
 
                                         {/* CTA */}
                                         <button
-                                            disabled={soldOut || hasSalesEnded}
+                                            disabled={soldOut || hasSalesEnded || salesNotStarted}
                                             onClick={() => handleSelect(type)}
                                             className={`w-full py-2 rounded-lg font-semibold ${soldOut || hasSalesEnded || salesNotStarted
                                                 ? "bg-gray-300 text-gray-600"
