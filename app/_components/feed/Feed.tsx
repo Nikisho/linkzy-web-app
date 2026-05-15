@@ -34,11 +34,11 @@ async function Feed() {
     const RenderItem = ({ item }: { item: Event }) => {
         const formattedDate = formatDateShortWeekday(item.date);
         const lowestPrice = getLowestPrice(item.ticket_types);
-
+        const dateIsInThePast = new Date(item.date).getTime() < new Date().getTime();
         return (
             <a
                 href={`/events/${item.featured_event_id.toString()}`}
-                className="flex flex-col lg:flex-col mt-2 items-center sm:items-start hover:opacity-20 hover:cursor-pointer transition duration-500">
+                className={`flex flex-col lg:flex-col mt-2 items-center sm:items-start ${dateIsInThePast ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-20 hover:cursor-pointer'} transition duration-500`}>
                 <div className="w-full lg:mx-3 sm:w-70 h-70 overflow-hidden rounded-xl lg:mb-3">
                     <Image
                         src={item.image_url!}
