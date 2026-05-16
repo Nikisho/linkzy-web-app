@@ -34,7 +34,8 @@ async function Feed() {
     const RenderItem = ({ item }: { item: Event }) => {
         const formattedDate = formatDateShortWeekday(item.date);
         const lowestPrice = getLowestPrice(item.ticket_types);
-        const dateIsInThePast = new Date(item.date).getTime() < new Date().getTime();
+        const oneDayAgo = new Date().getTime() - (24 * 60 * 60 * 1000);
+        const dateIsInThePast = new Date(item.date).getTime() < oneDayAgo;
         return (
             <a
                 href={`/events/${item.featured_event_id.toString()}`}
