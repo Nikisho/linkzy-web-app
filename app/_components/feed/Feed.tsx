@@ -4,8 +4,7 @@ import { Event } from '@/app/_types/Event';
 import formatDateShortWeekday from '@/app/_utils/formatDateShortWeekday';
 import { getLowestPrice } from '@/app/_utils/getLowetPrice';
 import { headers } from 'next/headers';
-
-
+import { getPricePlusPlatformFee } from '@/app/_utils/getPricePlusPlatformFee';
 
 async function Feed() {
 
@@ -36,6 +35,11 @@ async function Feed() {
         const lowestPrice = getLowestPrice(item.ticket_types);
         const oneDayAgo = new Date().getTime() - (24 * 60 * 60 * 1000);
         const dateIsInThePast = new Date(item.date).getTime() < oneDayAgo;
+        const lowestPricePlusPlatformFee = getPricePlusPlatformFee(
+            lowestPrice,
+            item.organizers.platform_fee_discount_pct
+        );
+
         return (
             <a
                 href={`/events/${item.featured_event_id.toString()}`}
@@ -60,7 +64,7 @@ async function Feed() {
                             {
                                 lowestPrice !== '0' ?
                                     <p className="text-sm sm:text-base font-medium text-gray-200">
-                                        £{lowestPrice}
+                                        £{lowestPricePlusPlatformFee?.toFixed(2)}
                                     </p> :
                                     <p>
                                         Free

@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
     const platformFeeInPence = Math.round(baseFee * (1 - discountPct / 100));
 
     const paymentIntentParams: PaymentIntentParamsProps = {
-      amount: Math.round(subtotal * 100), // in cents
+      amount: Math.round(subtotal * 100) + platformFeeInPence, // in cents
       currency: ticket.currency_code,
       automatic_payment_methods: {
         enabled: true,

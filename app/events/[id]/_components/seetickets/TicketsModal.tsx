@@ -5,6 +5,7 @@ import { TicketTypes } from '../../_types/TicketTypes';
 import { useState } from 'react';
 import CheckoutModal from '../checkout/CheckoutModal';
 import { Event } from '@/app/_types/Event';
+import { getPricePlusPlatformFee } from '@/app/_utils/getPricePlusPlatformFee';
 
 function TicketsModal({
     open,
@@ -42,6 +43,10 @@ function TicketsModal({
                                 const soldOut = type.quantity <= type.tickets_sold;
                                 const hasSalesEnded = new Date(type.sales_end).getTime() <= now.getTime();
                                 const salesNotStarted = new Date(type.sales_start).getTime() > now.getTime();
+                                const ticketPrice = getPricePlusPlatformFee(
+                                    type.price,
+                                    event.organizers.platform_fee_discount_pct
+                                );
                                 return (
                                     <div
                                         key={type.ticket_type_id}
@@ -58,7 +63,7 @@ function TicketsModal({
                                                         Free
                                                     </p> :
                                                     <p className=" font-bold">
-                                                        £{Number(type.price).toFixed(2)}
+                                                        £{ticketPrice?.toFixed(2)}
                                                     </p>
                                             }
                                         </div>

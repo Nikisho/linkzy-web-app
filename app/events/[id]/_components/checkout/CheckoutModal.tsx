@@ -11,6 +11,7 @@ import StripePayment from "../stripepayment/StripePayment";
 import { User } from "../../_types/User";
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import AddcircleIcon from '@mui/icons-material/AddCircle';
+import { getPricePlusPlatformFee } from "@/app/_utils/getPricePlusPlatformFee";
 
 function CheckoutModal({
     open,
@@ -33,6 +34,11 @@ function CheckoutModal({
     const [ticketQuantity, setTicketQuantity] = useState(1);
     const isFree = selectedTicket?.price.toString() === '0';
     const subtotal = selectedTicket?.price * ticketQuantity;
+    const ticketPrice = getPricePlusPlatformFee(
+        selectedTicket?.price,
+        event.organizers.platform_fee_discount_pct
+    );
+    const total = ticketPrice ? ticketPrice * ticketQuantity : 0;
     const validateName = (value: string) => {
         if (!value.trim()) return "Name is required";
         if (value.trim().length < 2) return "Name must be at least 2 characters";
@@ -192,7 +198,7 @@ function CheckoutModal({
 
                     <Modal open={open} onClose={() => setOpen(false)}>
                         <Box>
-                            { loading && (
+                            {loading && (
                                 <div className="fixed inset-0 z-100 flex  xl:w-1/3 items-center justify-center bg-white/70">
                                     <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-gray-900" />
                                 </div>
@@ -319,7 +325,7 @@ function CheckoutModal({
                                     </div>
 
                                     {/* Ticket Summary */}
-                                    <div className="p-4 mb-10">
+                                    <div className="px-4">
                                         <h2 className="text-lg font-semibold mb-2 h-1/4">Order</h2>
 
                                         <div
@@ -353,14 +359,41 @@ function CheckoutModal({
                                         </div>
                                     </div>
 
-                                    {/* Total */}
-                                    <div className=" mx-5 p-4  flex justify-between items-center mt- pt-3 border-t">
+                                    {/* Pricing Summary */}
+                                    <div className="mx-4 mt-4 rounded-2xl border border-gray-200 bg-gray-50/70 overflow-hidden">
 
-                                        <span className="font-semibold text-base">Total</span>
+                                        {/* Subtotal */}
+                                        {!isFree && (
+                                            <div className="flex items-center justify-between px-4 pt-4 text-sm text-gray-800">
+                                                <span>Subtotal</span>
 
-                                        <span className="font-bold text-lg">
-                                            {isFree ? "Free" : `£${formatPrice(subtotal)}`}
-                                        </span>
+                                                <span>
+                                                    £{formatPrice(subtotal)}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Booking Fee */}
+                                        {!isFree && (
+                                            <div className="flex items-center justify-between px-4 pt-2 pb-4 text-sm text-gray-500 border-b border-gray-200">
+                                                <span>Booking fee</span>
+
+                                                <span>
+                                                    £{formatPrice(total - subtotal)}
+                                                </span>
+                                            </div>
+                                        )}
+
+                                        {/* Total */}
+                                        <div className="flex items-center justify-between px-4 py-4">
+                                            <span className="font-semibold text-base text-black">
+                                                Total
+                                            </span>
+
+                                            <span className="font-bold text-xl text-black">
+                                                {isFree ? "Free" : `£${formatPrice(total)}`}
+                                            </span>
+                                        </div>
                                     </div>
                                     {
                                         loading && (

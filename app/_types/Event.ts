@@ -16,6 +16,7 @@ export interface Event {
         id:number,
         name:string
       }
+      platform_fee_discount_pct?: number;
     }
     ticket_types : TicketTypes[]
 }

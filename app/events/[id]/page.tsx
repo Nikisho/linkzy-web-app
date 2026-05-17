@@ -160,7 +160,10 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                             <Description description={event.description} />
 
 
-                            <Price ticket_types={event.ticket_types} />
+                            <Price 
+                                ticket_types={event.ticket_types} 
+                                organizers={event.organizers}
+                            />
                         </div>
                         <div className='my-3'>
                             <p className='text-2xl'>Promoter</p>
