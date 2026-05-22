@@ -34,6 +34,9 @@ function CheckoutModal({
     const [ticketQuantity, setTicketQuantity] = useState(1);
     const isFree = selectedTicket?.price.toString() === '0';
     const subtotal = selectedTicket?.price * ticketQuantity;
+    const maxTickets = 5;
+    const availableTickets = selectedTicket ? selectedTicket.quantity - selectedTicket.tickets_sold : 0;
+    const canIncrease = ticketQuantity < maxTickets && ticketQuantity < availableTickets;
     const ticketPrice = getPricePlusPlatformFee(
         selectedTicket?.price,
         event.organizers.platform_fee_discount_pct
@@ -113,6 +116,14 @@ function CheckoutModal({
 
     console.log('Selected :', ticketQuantity)
 
+    const handleClose = () => {
+        setOpen(false);
+        setUser({ name: '', email: '', confirmEmail: '' });
+        setErrors({ name: "", email: "", confirmEmail: "" });
+        setServerError("");
+        setSuccess(false);
+        setTicketQuantity(1);
+    };
     const handleFreeCheckout = async () => {
         const existingBooking = await checkExistingBooking();
         if (existingBooking) {
@@ -208,7 +219,7 @@ function CheckoutModal({
                                 <div className="flex-1 overflow-y-auto">
 
                                     <button
-                                        onClick={() => setOpen(false)}
+                                        onClick={() => handleClose()}
                                         className="absolute top-3 right-3 p-2"
                                     >
                                         <CloseIcon fontSize="large" />
@@ -352,8 +363,8 @@ function CheckoutModal({
                                                 </p>
                                                 <AddcircleIcon
                                                     fontSize="large"
-                                                    className={`text-blue-500 ${ticketQuantity === 5 && 'cursor-not-allowed text-gray-200'}`}
-                                                    onClick={() => setTicketQuantity(prev => prev < 5 ? prev + 1 : prev)}
+                                                    className={`text-blue-500 ${canIncrease || 'cursor-not-allowed text-gray-200'}`}
+                                                    onClick={() => setTicketQuantity(prev => prev < maxTickets && prev < availableTickets ? prev + 1 : prev)}
                                                 />
                                             </div>
                                         </div>
