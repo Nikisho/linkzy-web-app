@@ -113,9 +113,7 @@ function CheckoutModal({
         }
         setOpenStripeModal(true);
     };
-
-    console.log('Selected :', ticketQuantity)
-
+    
     const handleClose = () => {
         setOpen(false);
         setUser({ name: '', email: '', confirmEmail: '' });

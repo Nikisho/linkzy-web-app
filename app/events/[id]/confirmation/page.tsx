@@ -1,4 +1,3 @@
-import { emailUserUponPurchase } from "@/app/_utils/emailUserUponPurchase";
 import formatDateShortWeekday from "@/app/_utils/formatDateShortWeekday";
 import supabase from "@/supabase";
 
@@ -34,10 +33,7 @@ export default async function ConfirmationPage(
         return data;
     }
     const event = await fetchEventData();
-    const user = await fetchUserData();
 
-    // await emailUserUponPurchase(Number(userid), event, user)
-    console.log("Email skipped", event);
     return (
         <div className="flex justify-center px-4 py-10">
             <div className="w-full max-w-xl bg-white rounded-xl shadow p-8">

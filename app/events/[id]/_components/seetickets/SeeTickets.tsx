@@ -8,7 +8,6 @@ export default function SeeTickets({
     event
 }: {event: Event}) {
     const [open, setOpen] = useState<boolean>(false);
-    console.log(event)
     return (
         <div>
             <button
