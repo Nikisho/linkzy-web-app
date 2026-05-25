@@ -4,6 +4,7 @@ import formatDateShortWeekday from '../_utils/formatDateShortWeekday';
 import { getLowestPrice } from '../_utils/getLowetPrice';
 import { Event } from '../_types/Event';
 import type { Metadata } from "next";
+import { getPricePlusPlatformFee } from '../_utils/getPricePlusPlatformFee';
 
 export async function generateMetadata({ params }: { params: { organiserSlug: string } }): Promise<Metadata> {
     const { organiserSlug } = await params;
@@ -81,7 +82,7 @@ async function OrganiserPage({ params }: { params: { organiserSlug: string } }) 
     const fetchOrganiserEvents = async (organiserId: number) => {
         const { data, error } = await supabase
             .from('featured_events')
-            .select(`*`)
+            .select(`*, organizers(*), ticket_types(*)`)
             .eq('organizer_id', organiserId)
             .eq('test', false)
             .order('date', { ascending: false });
@@ -102,12 +103,17 @@ async function OrganiserPage({ params }: { params: { organiserSlug: string } }) 
 
     const RenderItem = ({ item }: { item: Event }) => {
         const formattedDate = formatDateShortWeekday(item.date);
-        const lowestPrice = getLowestPrice(item.ticket_types);
-
+        let lowestPrice = getLowestPrice(item.ticket_types);
+        const oneDayAgo = new Date().getTime() - (24 * 60 * 60 * 1000);
+        const dateIsInThePast = new Date(item.date).getTime() < oneDayAgo;
+        const lowestPricePlusPlatformFee = getPricePlusPlatformFee(
+            lowestPrice,
+            item.organizers.platform_fee_discount_pct
+        );
         return (
             <a
                 href={`/events/${item.featured_event_id.toString()}`}
-                className="flex flex-col lg:flex-col mt-2 items-center sm:items-start hover:opacity-20 hover:cursor-pointer transition duration-500">
+                className={`flex flex-col lg:flex-col mt-2 items-center sm:items-start ${dateIsInThePast ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-20 hover:cursor-pointer'} transition duration-500`}>
                 <div className="w-full lg:mx-3 sm:w-70 h-70 overflow-hidden rounded-xl lg:mb-3">
                     <Image
                         src={item.image_url!}
@@ -128,7 +134,7 @@ async function OrganiserPage({ params }: { params: { organiserSlug: string } }) 
                             {
                                 lowestPrice !== '0' ?
                                     <p className="text-sm sm:text-base font-medium text-gray-200">
-                                        £{lowestPrice}
+                                        £{lowestPricePlusPlatformFee?.toFixed(2)}
                                     </p> :
                                     <p>
                                         Free
