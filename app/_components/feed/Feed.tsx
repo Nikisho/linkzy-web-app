@@ -11,13 +11,16 @@ async function Feed() {
     const fetchEvents = async () => {
         const headersList = await headers();
         const country_code = headersList.get("x-vercel-ip-country") ?? "GB";
-
+        const now = new Date().toISOString();
+        const oneMonthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         try {
             const { data, error } = await supabase
                 .from('featured_events')
                 .select(`*, ticket_types(*), organizers(*, users(*))`)
                 .order('date', { ascending: false })
                 .eq('country_code', country_code)
+                .or(`publish_at.lte.${now},publish_at.is.null`)
+                .gt('date', oneMonthAgo)
                 .neq('test', true)
             if (data) {
                 return data;
