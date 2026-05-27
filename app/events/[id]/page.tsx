@@ -7,6 +7,7 @@ import LocationPinIcon from '@mui/icons-material/LocationPin';
 import Price from './_components/price/Price';
 import SeeTickets from './_components/seetickets/SeeTickets';
 import { Metadata } from 'next';
+import TrackPageViews from './_components/pageviews/TrackPageViews';
 
 export async function generateMetadata({ params }: { params: { id: number } }): Promise<Metadata> {
     const { id } = await params;
@@ -208,7 +209,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                 event={event}
                             />
                         </div>
-
+                        <TrackPageViews featured_event_id={id}/>
                     </div>
                 </div>
             </div>
