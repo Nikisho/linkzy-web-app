@@ -78,7 +78,14 @@ const Home = () => {
 
 				<div className='flex flex-col items-center my-5 xl:flex-row  justify-center rounded-xl lg:w-1/2 max-h-screen  '>
 
-					<Image
+					{/* <Image
+						src='/linkzyFrames.png'
+						width={400}
+						height={400}
+						alt='screenshot'
+						className=' '
+					/> */}
+					<img
 						src='/linkzyFrames.png'
 						width={400}
 						height={400}

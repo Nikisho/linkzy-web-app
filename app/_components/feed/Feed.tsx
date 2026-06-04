@@ -48,11 +48,17 @@ async function Feed() {
                 href={`/events/${item.featured_event_id.toString()}`}
                 className={`flex flex-col lg:flex-col mt-2 items-center sm:items-start ${dateIsInThePast ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-20 hover:cursor-pointer'} transition duration-500`}>
                 <div className="w-full lg:mx-3 sm:w-70 h-70 overflow-hidden rounded-xl lg:mb-3">
-                    <Image
+                    {/* <Image
                         src={item.image_url!}
                         alt={item.featured_event_id.toString()}
                         width={240}
                         height={240}
+                        className="w-full h-full object-cover"
+                    /> */}
+                    <img
+                        src={item.image_url!}
+                        alt={item.featured_event_id.toString()}
+                        loading="lazy"
                         className="w-full h-full object-cover"
                     />
                 </div>

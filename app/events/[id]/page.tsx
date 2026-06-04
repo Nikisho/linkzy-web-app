@@ -109,7 +109,14 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                         </div>
 
                         <div className='w-full  my-5 flex justify-center'>
-                            <Image
+                            {/* <Image
+                                src={event.image_url}
+                                height={370}
+                                width={370}
+                                alt={event.title}
+                                className='rounded-xl xl:w-[110%]'
+                            /> */}  
+                            <img
                                 src={event.image_url}
                                 height={370}
                                 width={370}
@@ -173,10 +180,16 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                 {
                                     event?.organizers?.users.photo ?
                                         <a href={`/${event?.organizers?.users.name}`} target='_blank' rel='noopener noreferrer' className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
-                                            <Image
+                                            {/* <Image
                                                 src={event?.organizers?.users.photo}
                                                 alt={event.organizers.users.id}
                                                 fill
+                                                className="object-cover"
+                                            /> */}
+                                            <img
+                                                src={event?.organizers?.users.photo}
+                                                alt={event.organizers.users.id}
+                                                loading="lazy"
                                                 className="object-cover"
                                             />
                                         </a>

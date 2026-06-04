@@ -23,7 +23,18 @@ function Header() {
                 <a
                     href='/'
                     className="flex items-center hover:opacity-25 transtion duration-500 hover:cursor-pointer">
-                    <Image
+                    {/* <Image
+                        src="/icon.png"
+                        alt="Main Logo"
+                        width={35}
+                        height={35}
+                        style={{
+                            borderRadius: 30,
+                            opacity: openMenu ? 0.3 : 1,
+                        }}
+                        className='lg:h-15 lg:w-15'
+                    /> */}
+                    <img
                         src="/icon.png"
                         alt="Main Logo"
                         width={35}

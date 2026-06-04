@@ -44,7 +44,13 @@ function SecondScroll() {
                     </div>
                 </div>
                 <div className=' w-full xl:w-1/3 2xl:w-[25%]  '>
-                    <Image
+                    {/* <Image
+                        src='/secondscrollmainimage_new2.jpg'
+                        width={1000}
+                        height={500}
+                        alt='secondscroll'
+                    /> */}
+                    <img
                         src='/secondscrollmainimage_new2.jpg'
                         width={1000}
                         height={500}
