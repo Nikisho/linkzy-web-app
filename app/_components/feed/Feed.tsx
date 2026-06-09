@@ -22,7 +22,7 @@ async function Feed() {
                 .or(`publish_at.lte.${now},publish_at.is.null`)
                 .gt('date', oneMonthAgo)
                 .neq('test', true)
-                // .neq('cancelled', true);
+                .or(`cancelled.eq.false,cancelled.is.null`);
             if (data) {
                 return data;
             }
