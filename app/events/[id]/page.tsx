@@ -115,7 +115,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                 width={370}
                                 alt={event.title}
                                 className='rounded-xl xl:w-[110%]'
-                            /> */}  
+                            /> */}
                             <img
                                 src={event.image_url}
                                 height={370}
@@ -168,8 +168,8 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                             <Description description={event.description} />
 
 
-                            <Price 
-                                ticket_types={event.ticket_types} 
+                            <Price
+                                ticket_types={event.ticket_types}
                                 organizers={event.organizers}
                             />
                         </div>
@@ -217,12 +217,19 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                 </p>
 
                             </div>
-                            <SeeTickets
-                                // ticket_types={event.ticket_types}
-                                event={event}
-                            />
+                            {event.cancelled ?
+                                <div className='bg-red-500 text-white p-2 rounded-md mb-3'>
+                                    This event has been cancelled.
+                                </div>
+                                :
+                                <SeeTickets
+                                    // ticket_types={event.ticket_types}
+                                    event={event}
+                                />
+
+                            }
                         </div>
-                        <TrackPageViews featured_event_id={id}/>
+                        <TrackPageViews featured_event_id={id} />
                     </div>
                 </div>
             </div>
