@@ -85,6 +85,7 @@ async function OrganiserPage({ params }: { params: { organiserSlug: string } }) 
             .select(`*, organizers(*), ticket_types(*)`)
             .eq('organizer_id', organiserId)
             .eq('test', false)
+            .neq('cancelled', true)
             .order('date', { ascending: false });
 
         if (error) {
