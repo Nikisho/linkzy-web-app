@@ -11,6 +11,7 @@ import { checkExistingBooking } from "../_utils/checkExistingBooking.ts";
 import { insertUser } from "../_utils/insertUser.ts";
 import { checkExistingUser } from "../_utils/checkExistingUser.ts";
 import { emailUserUponPurchase } from "../_utils/emailUserUponPurchase.ts";
+import { emailOrganizerUponPurchase } from "../_utils/emailOrganizerUponPurchase.ts"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -85,7 +86,11 @@ Deno.serve(async (req) => {
       ticket_type.featured_event_id,
       tickets
     );
-
+    emailOrganizerUponPurchase(
+        user_id,
+        event.organizer_id,
+        ticket_type.featured_event_id,
+      );
     return new Response(
       JSON.stringify({ user_id }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
