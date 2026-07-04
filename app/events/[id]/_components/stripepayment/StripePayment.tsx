@@ -14,6 +14,7 @@ export default function StripePayment({
     setOpen,
     user,
     selectedTicket,
+    appliedPromoCodeId,
     subtotal,
     quantity,
     event
@@ -22,6 +23,7 @@ export default function StripePayment({
     setOpen: (bool: boolean) => void, 
     user: User, 
     selectedTicket: TicketTypes, 
+    appliedPromoCodeId?: number | null,
     subtotal: number,
     quantity: number,
     event: Event 
@@ -80,7 +82,8 @@ export default function StripePayment({
                             chat_room_id: event.chat_room_id,
                         },
                         quantity: quantity,
-                        subtotal: subtotal
+                        subtotal: subtotal,
+                        promo_code_id: appliedPromoCodeId || null
                     },
                 }
             );

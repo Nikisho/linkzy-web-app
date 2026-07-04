@@ -57,6 +57,7 @@ export interface PaymentIntentParamsProps {
     tickets_sold: string;
     chat_room_id: string;
     ticket_type_id: string;
+    promo_code_id?: number | null;
   };
 }
 export interface Event {

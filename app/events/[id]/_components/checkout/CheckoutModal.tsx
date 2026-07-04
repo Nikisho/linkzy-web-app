@@ -12,6 +12,7 @@ import { User } from "../../_types/User";
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import AddcircleIcon from '@mui/icons-material/AddCircle';
 import { getPricePlusPlatformFee } from "@/app/_utils/getPricePlusPlatformFee";
+import PromoCodeInput from "./PromoCodeInput";
 
 function CheckoutModal({
     open,
@@ -33,15 +34,23 @@ function CheckoutModal({
     const [openStripeModal, setOpenStripeModal] = useState(false);
     const [ticketQuantity, setTicketQuantity] = useState(1);
     const isFree = selectedTicket?.price.toString() === '0';
-    const subtotal = selectedTicket?.price * ticketQuantity;
     const maxTickets = 5;
     const availableTickets = selectedTicket ? selectedTicket.quantity - selectedTicket.tickets_sold : 0;
     const canIncrease = ticketQuantity < maxTickets && ticketQuantity < availableTickets;
+    const [appliedPromo, setAppliedPromo] = useState<any>(null);
+    console.log(appliedPromo)
+    const subtotal = selectedTicket?.price * ticketQuantity;
+    const discount = appliedPromo
+        ? appliedPromo.discount_type === "percentage"
+            ? (subtotal * appliedPromo.discount_value) / 100
+            : appliedPromo.discount_value
+        : 0;
     const ticketPrice = getPricePlusPlatformFee(
         selectedTicket?.price,
         event.organizers.platform_fee_discount_pct
     );
-    const total = ticketPrice ? ticketPrice * ticketQuantity : 0;
+    const totalBeforeDiscount = ticketPrice ? ticketPrice * ticketQuantity : 0;
+    const total = ticketPrice ? ticketPrice * ticketQuantity - discount : 0;
     const validateName = (value: string) => {
         if (!value.trim()) return "Name is required";
         if (value.trim().length < 2) return "Name must be at least 2 characters";
@@ -113,7 +122,7 @@ function CheckoutModal({
         }
         setOpenStripeModal(true);
     };
-    
+
     const handleClose = () => {
         setOpen(false);
         setUser({ name: '', email: '', confirmEmail: '' });
@@ -161,7 +170,7 @@ function CheckoutModal({
                                 location: event.location,
                                 chat_room_id: event.chat_room_id,
                             },
-                            quantity: ticketQuantity
+                            quantity: ticketQuantity,
                         }
                     }
                 );
@@ -366,7 +375,16 @@ function CheckoutModal({
                                                 />
                                             </div>
                                         </div>
+                                        {!isFree &&
+                                            <PromoCodeInput
+                                                featured_event_id={event.featured_event_id}
+                                                onApply={(promo) => {
+                                                    setAppliedPromo(promo);
+                                                }}
+                                            />
+                                        }
                                     </div>
+
 
                                     {/* Pricing Summary */}
                                     <div className="mx-4 mt-4 rounded-2xl border border-gray-200 bg-gray-50/70 overflow-hidden">
@@ -377,7 +395,7 @@ function CheckoutModal({
                                                 <span>Subtotal</span>
 
                                                 <span>
-                                                    £{formatPrice(subtotal)}
+                                                    £{formatPrice(subtotal - discount)}
                                                 </span>
                                             </div>
                                         )}
@@ -388,7 +406,7 @@ function CheckoutModal({
                                                 <span>Booking fee</span>
 
                                                 <span>
-                                                    £{formatPrice(total - subtotal)}
+                                                    £{formatPrice(totalBeforeDiscount - subtotal)}
                                                 </span>
                                             </div>
                                         )}
@@ -448,8 +466,9 @@ function CheckoutModal({
                 setOpen={setOpenStripeModal}
                 user={user}
                 selectedTicket={selectedTicket}
-                subtotal={subtotal}
+                subtotal={subtotal - discount}
                 quantity={ticketQuantity}
+                appliedPromoCodeId={appliedPromo ? appliedPromo.promo_code_id : null}
                 event={event}
             />
         </>
