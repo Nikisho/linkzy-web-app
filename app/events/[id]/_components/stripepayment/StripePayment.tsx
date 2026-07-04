@@ -16,6 +16,7 @@ export default function StripePayment({
     selectedTicket,
     appliedPromoCodeId,
     subtotal,
+    originalSubtotal,
     quantity,
     event
 }: { 
@@ -25,6 +26,7 @@ export default function StripePayment({
     selectedTicket: TicketTypes, 
     appliedPromoCodeId?: number | null,
     subtotal: number,
+    originalSubtotal: number,
     quantity: number,
     event: Event 
 }) {
@@ -83,6 +85,7 @@ export default function StripePayment({
                         },
                         quantity: quantity,
                         subtotal: subtotal,
+                        original_subtotal: originalSubtotal,
                         promo_code_id: appliedPromoCodeId || null
                     },
                 }

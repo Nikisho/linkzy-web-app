@@ -467,6 +467,7 @@ function CheckoutModal({
                 user={user}
                 selectedTicket={selectedTicket}
                 subtotal={subtotal - discount}
+                originalSubtotal={subtotal}
                 quantity={ticketQuantity}
                 appliedPromoCodeId={appliedPromo ? appliedPromo.promo_code_id : null}
                 event={event}
