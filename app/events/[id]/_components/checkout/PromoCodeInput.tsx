@@ -38,7 +38,7 @@ function PromoCodeInput({ featured_event_id, onApply }: PromoCodesProps) {
             return;
         }
 
-        if (match.quantity <= match.redemption_count) {
+        if (match.quantity && (match.quantity <= match.redemption_count)) {
             setError("Promo code has been fully redeemed");
             return;
         }
