@@ -82,7 +82,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
         try {
             const { data, error } = await supabase
                 .from('featured_events')
-                .select(`*, organizers(*, users(*)), ticket_types(*)`)
+                .select(`*, organizers(*, users(*)), ticket_types(*), refund_policy_types(*)`)
                 .eq('featured_event_id', id)
                 .single();
             if (data) {
@@ -139,7 +139,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
 
                             <div className="pt-4 text-sm text-gray-500">
                                 <span className="font-medium">Refund policy:</span>{" "}
-                                {event.refund_policy || "No refunds"}
+                                {event.refund_policy_types.name || "No refunds"}
                             </div>
                         </div>
 
