@@ -6,6 +6,7 @@ import { useState } from 'react';
 import CheckoutModal from '../checkout/CheckoutModal';
 import { Event } from '@/app/_types/Event';
 import { getPricePlusPlatformFee } from '@/app/_utils/getPricePlusPlatformFee';
+import formatDateShortWeekday from '@/app/_utils/formatDateShortWeekday';
 
 function TicketsModal({
     open,
@@ -43,6 +44,7 @@ function TicketsModal({
                                 const soldOut = type.quantity <= type.tickets_sold;
                                 const hasSalesEnded = new Date(type.sales_end).getTime() <= now.getTime();
                                 const salesNotStarted = new Date(type.sales_start).getTime() > now.getTime();
+                                const salesStartDate = new Date(type.sales_start);
                                 const ticketPrice = getPricePlusPlatformFee(
                                     type.price,
                                     event.organizers.platform_fee_discount_pct
@@ -84,7 +86,7 @@ function TicketsModal({
                                                 : "bg-black text-white active:scale-[0.98] transition duration-300"
                                                 }`}
                                         >
-                                            {soldOut ? "Sold out" : (hasSalesEnded ? 'Sales ended' : (salesNotStarted ? 'Sales not started' : 'Select'))}
+                                            {soldOut ? "Sold out" : (hasSalesEnded ? 'Sales ended' : (salesNotStarted ? `Sales start on ${formatDateShortWeekday(salesStartDate)}` : 'Select'))}
                                         </button>
                                     </div>
                                 );
