@@ -84,6 +84,7 @@ Deno.serve(async (req) => {
     await emailUserUponPurchase(
       user_id,
       ticket_type.featured_event_id,
+      ticket_type.organizer_id,
       tickets
     );
     emailOrganizerUponPurchase(

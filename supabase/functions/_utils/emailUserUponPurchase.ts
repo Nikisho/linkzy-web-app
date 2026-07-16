@@ -9,6 +9,7 @@ async function generateQRCodeBase64(value: string) {
 export const emailUserUponPurchase = async (
     user_id: number,
     featured_event_id: number,
+    organizer_id: number,
     tickets: {ticket_id:number, qr_code_link:string}[]
 ) => {
 
@@ -31,7 +32,19 @@ export const emailUserUponPurchase = async (
     if (event_error) {
         console.error("Error fetching event details: ", event_error);
     }
+    const { data: organizer, error: organizerError } = await supabaseAdmin
+        .from("organizers")
+        .select(`organizer_id, users(email)`)
+        .eq("organizer_id", organizer_id)
+        .single();
 
+    if (organizerError || !organizer) {
+        console.error(
+            "Error fetching organiser email: ",
+            organizerError?.message,
+        );
+        // return null;
+    }
     const {
         error: confirmation_email_sent_error,
         data: confirmation_email_sent,
@@ -71,6 +84,7 @@ export const emailUserUponPurchase = async (
             email: user.email,
             title: event.title,
             location: event.location,
+            organizer_email: organizer.users.email,
             date: event.date && event.time &&
                 (formatDateShortWeekday(event.date) + ", " +
                     event.time.slice(0, -3)),
