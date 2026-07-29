@@ -24,11 +24,19 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { user, selected_ticket, event, quantity, subtotal,original_subtotal, promo_code_id } = await req.json();
+    const {
+      user,
+      selected_ticket,
+      event,
+      quantity,
+      subtotal,
+      original_subtotal,
+      promo_code_id,
+    } = await req.json();
 
     console.log("user received :", user);
     console.log("promo_code_id received :", promo_code_id);
-    
+
     let user_id;
 
     const { data: ticket, error: ticketErr } = await supabaseAdmin
@@ -73,10 +81,16 @@ Deno.serve(async (req) => {
     console.log("🎉stripe account ID :", organizer.stripe_account_id);
 
     const priceInPence = Math.round(original_subtotal * 100);
-    const baseFee = Math.round(priceInPence * 0.030);
-    const discountPct = organizer.platform_fee_discount_pct ?? 0;
-    const platformFeeInPence = Math.round(baseFee * (1 - discountPct / 100));
+    const percentageFee = Math.round(priceInPence * 0.03);
+    const fixedFee = quantity * 20;
 
+    const baseFee = percentageFee + fixedFee;
+
+    const discountPct = organizer.platform_fee_discount_pct ?? 0;
+
+    const platformFeeInPence = Math.round(
+      baseFee * (1 - discountPct / 100),
+    );
     const paymentIntentParams: PaymentIntentParamsProps = {
       amount: Math.round(subtotal * 100) + platformFeeInPence, // in cents
       currency: ticket.currency_code,
