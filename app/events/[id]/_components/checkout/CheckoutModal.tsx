@@ -13,6 +13,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import AddcircleIcon from '@mui/icons-material/AddCircle';
 import { getPricePlusPlatformFee } from "@/app/_utils/getPricePlusPlatformFee";
 import PromoCodeInput from "./PromoCodeInput";
+import checkBucketCapacity from "@/app/_utils/checkBucketCapacity";
 
 function CheckoutModal({
     open,
@@ -104,6 +105,17 @@ function CheckoutModal({
     const openStripePaymentModal = async () => {
 
         const existingBooking = await checkExistingBooking();
+
+        const available = await checkBucketCapacity(
+            selectedTicket.ticket_type_id,
+            ticketQuantity
+        );
+
+        if (!available) {
+            alert("Sorry, this ticket allocation is sold out.");
+            return;
+        }
+
         if (existingBooking) {
             setServerError("You have already purchased this ticket.");
             return;
