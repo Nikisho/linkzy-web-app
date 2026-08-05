@@ -20,6 +20,8 @@ function TicketsModal({
         setOpenCheckoutModal(!openCheckoutModal)
     };
 
+
+
     return (
         <>
             <Modal
@@ -39,58 +41,78 @@ function TicketsModal({
                         </button>
 
                         <div className="space-y-4 p-4">
-                            {event?.ticket_types?.map((type) => {
+                            {event?.ticket_types?.slice().sort((a, b) => {
                                 const now = new Date();
-                                const soldOut = type.quantity <= type.tickets_sold;
-                                const hasSalesEnded = new Date(type.sales_end).getTime() <= now.getTime();
-                                const salesNotStarted = new Date(type.sales_start).getTime() > now.getTime();
-                                const salesStartDate = new Date(type.sales_start);
-                                const ticketPrice = getPricePlusPlatformFee(
-                                    type.price,
-                                    event.organizers.platform_fee_discount_pct
-                                );
-                                return (
-                                    <div
-                                        key={type.ticket_type_id}
-                                        className="bg-gray-100 rounded-xl p-4 flex flex-col shadow-sm border border-gray-200"
-                                    >
-                                        {/* Name + Price */}
-                                        <div className="flex justify-between types-center mb-2">
-                                            <p className="font-semibold text-lg">{type.name}</p>
 
-                                            {
-                                                type.price.toString() === '0' ?
-                                                    <p className=" font-bold">
+                                const getPriority = (ticket: any) => {
+                                    const soldOut = ticket.quantity <= ticket.tickets_sold;
+                                    const hasSalesEnded =
+                                        new Date(ticket.sales_end).getTime() <= now.getTime();
+                                    const salesNotStarted =
+                                        new Date(ticket.sales_start).getTime() > now.getTime();
 
-                                                        Free
-                                                    </p> :
-                                                    <p className=" font-bold">
-                                                        £{ticketPrice?.toFixed(2)}
-                                                    </p>
-                                            }
-                                        </div>
+                                    if (!soldOut && !hasSalesEnded && !salesNotStarted) return 0; // Available
+                                    if (salesNotStarted) return 1; // Coming soon
+                                    if (hasSalesEnded) return 2; // Sales ended
+                                    if (soldOut) return 3; // Sold out
 
-                                        {/* Description (optional) */}
-                                        {type.description && (
-                                            <p className="text-gray-700 text-sm mb-3">
-                                                {type.description}
-                                            </p>
-                                        )}
+                                    return 4;
+                                };
 
-                                        {/* CTA */}
-                                        <button
-                                            disabled={soldOut || hasSalesEnded || salesNotStarted}
-                                            onClick={() => handleSelect(type)}
-                                            className={`w-full py-2 rounded-lg font-semibold ${soldOut || hasSalesEnded || salesNotStarted
-                                                ? "bg-gray-300 text-gray-600"
-                                                : "bg-black text-white active:scale-[0.98] transition duration-300"
-                                                }`}
+                                return getPriority(a) - getPriority(b);
+                            })
+                                .map((type) => {
+                                    const now = new Date();
+                                    const soldOut = type.quantity <= type.tickets_sold;
+                                    const hasSalesEnded = new Date(type.sales_end).getTime() <= now.getTime();
+                                    const salesNotStarted = new Date(type.sales_start).getTime() > now.getTime();
+                                    const salesStartDate = new Date(type.sales_start);
+                                    const ticketPrice = getPricePlusPlatformFee(
+                                        type.price,
+                                        event.organizers.platform_fee_discount_pct
+                                    );
+                                    return (
+                                        <div
+                                            key={type.ticket_type_id}
+                                            className="bg-gray-100 rounded-xl p-4 flex flex-col shadow-sm border border-gray-200"
                                         >
-                                            {soldOut ? "Sold out" : (hasSalesEnded ? 'Sales ended' : (salesNotStarted ? `Sales start on ${formatDateShortWeekday(salesStartDate)}` : 'Select'))}
-                                        </button>
-                                    </div>
-                                );
-                            })}
+                                            {/* Name + Price */}
+                                            <div className="flex justify-between types-center mb-2">
+                                                <p className="font-semibold text-lg">{type.name}</p>
+
+                                                {
+                                                    type.price.toString() === '0' ?
+                                                        <p className=" font-bold">
+
+                                                            Free
+                                                        </p> :
+                                                        <p className=" font-bold">
+                                                            £{ticketPrice?.toFixed(2)}
+                                                        </p>
+                                                }
+                                            </div>
+
+                                            {/* Description (optional) */}
+                                            {type.description && (
+                                                <p className="text-gray-700 text-sm mb-3">
+                                                    {type.description}
+                                                </p>
+                                            )}
+
+                                            {/* CTA */}
+                                            <button
+                                                disabled={soldOut || hasSalesEnded || salesNotStarted}
+                                                onClick={() => handleSelect(type)}
+                                                className={`w-full py-2 rounded-lg font-semibold ${soldOut || hasSalesEnded || salesNotStarted
+                                                    ? "bg-gray-300 text-gray-600"
+                                                    : "bg-black text-white active:scale-[0.98] transition duration-300"
+                                                    }`}
+                                            >
+                                                {soldOut ? "Sold out" : (hasSalesEnded ? 'Sales ended' : (salesNotStarted ? `Sales start on ${formatDateShortWeekday(salesStartDate)}` : 'Select'))}
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                         </div>
                     </div>
                 </Box>
