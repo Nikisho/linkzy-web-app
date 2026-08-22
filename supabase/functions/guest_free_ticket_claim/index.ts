@@ -62,8 +62,6 @@ Deno.serve(async (req) => {
     const booking_id = await bookFeaturedEvent(
         user_id,
         ticket_type.featured_event_id,
-        ticket_type.tickets_sold,
-        event.chat_room_id,
         ticket_type.ticket_type_id,
         quantity
       );
