@@ -34,11 +34,11 @@ function CheckoutModal({
     const { push } = useRouter();
     const [openStripeModal, setOpenStripeModal] = useState(false);
     const [ticketQuantity, setTicketQuantity] = useState(1);
-    const isFree = selectedTicket?.price.toString() === '0';
     const maxTickets = 5;
     const availableTickets = selectedTicket ? selectedTicket.quantity - selectedTicket.tickets_sold : 0;
     const canIncrease = ticketQuantity < maxTickets && ticketQuantity < availableTickets;
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
+    const isFree = selectedTicket?.price.toString() === '0' || appliedPromo?.discount_value === 100;
     console.log(appliedPromo)
     const subtotal = selectedTicket?.price * ticketQuantity;
     const discount = appliedPromo
@@ -162,7 +162,7 @@ function CheckoutModal({
         }
         try {
             setLoading(true);
-            if (selectedTicket.price.toString() === '0') {
+            if (selectedTicket.price.toString() === '0' || appliedPromo?.discount_value === 100) {
 
                 const { data: user_id, error, response } = await supabase.functions.invoke(
                     'guest_free_ticket_claim',
@@ -460,11 +460,11 @@ function CheckoutModal({
                                 {/* Checkout Button (Sticky Bottom) */}
                                 <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98] ">
                                     <button
-                                        onClick={() => { selectedTicket.price.toString() === '0' ? handleFreeCheckout() : openStripePaymentModal() }}
+                                        onClick={() => { selectedTicket.price.toString() === '0' || appliedPromo?.discount_value === 100 ? handleFreeCheckout() : openStripePaymentModal() }}
                                         className="w-full bg-black text-white py-3 rounded-lg font-semibold"
                                     >
                                         {
-                                            selectedTicket.price.toString() === '0' ? "Register" : 'Continue to Payment'
+                                            selectedTicket.price.toString() === '0' || appliedPromo?.discount_value === 100 ? "Register" : 'Continue to Payment'
                                         }
                                     </button>
                                 </div>
