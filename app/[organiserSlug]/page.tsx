@@ -13,6 +13,8 @@ export async function generateMetadata({ params }: { params: { organiserSlug: st
             .from('users')
             .select('*')
             .eq('name', decodeURIComponent(organiserSlug))
+            .eq('is_organizer', true)
+            .eq('guest', false)
             .single();
 
         if (error) {
@@ -56,6 +58,8 @@ async function OrganiserPage({ params }: { params: { organiserSlug: string } }) 
             .from('users')
             .select('*')
             .eq('name', decodeURIComponent(organiserSlug))
+            .eq('is_organizer', true)
+            .eq('guest', false)
             .single();
 
         if (error) {
