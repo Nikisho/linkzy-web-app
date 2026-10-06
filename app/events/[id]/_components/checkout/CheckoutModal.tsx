@@ -34,11 +34,11 @@ function CheckoutModal({
     const { push } = useRouter();
     const [openStripeModal, setOpenStripeModal] = useState(false);
     const [ticketQuantity, setTicketQuantity] = useState(1);
-    const maxTickets = 5;
     const availableTickets = selectedTicket ? selectedTicket.quantity - selectedTicket.tickets_sold : 0;
-    const canIncrease = ticketQuantity < maxTickets && ticketQuantity < availableTickets;
     const [appliedPromo, setAppliedPromo] = useState<any>(null);
     const isFree = selectedTicket?.price.toString() === '0' || appliedPromo?.discount_value === 100;
+    const maxTickets = isFree ? 1 : 5; // Limit to 1 ticket for free tickets, otherwise 10
+    const canIncrease = ticketQuantity < maxTickets && ticketQuantity < availableTickets;
     console.log(appliedPromo)
     const subtotal = selectedTicket?.price * ticketQuantity;
     const discount = appliedPromo
@@ -144,25 +144,26 @@ function CheckoutModal({
         setTicketQuantity(1);
     };
     const handleFreeCheckout = async () => {
-        const existingBooking = await checkExistingBooking();
-        if (existingBooking) {
-            setServerError("You have already purchased this ticket.");
-            return;
-        }
-        setServerError("");
-        setSuccess(false);
 
-        const nameErr = validateName(user.name);
-        const emailErr = validateEmail(user.email);
-        const confirmErr = validateConfirmEmail(user.email, user.confirmEmail);
-
-        if (nameErr || emailErr || confirmErr) {
-            setErrors({ name: nameErr, email: emailErr, confirmEmail: confirmErr });
-            return;
-        }
         try {
             setLoading(true);
-            if (selectedTicket.price.toString() === '0' || appliedPromo?.discount_value === 100) {
+            const existingBooking = await checkExistingBooking();
+            if (existingBooking) {
+                setServerError("You have already purchased this ticket.");
+                return;
+            }
+            setServerError("");
+            setSuccess(false);
+
+            const nameErr = validateName(user.name);
+            const emailErr = validateEmail(user.email);
+            const confirmErr = validateConfirmEmail(user.email, user.confirmEmail);
+
+            if (nameErr || emailErr || confirmErr) {
+                setErrors({ name: nameErr, email: emailErr, confirmEmail: confirmErr });
+                return;
+            }
+            if (isFree) {
 
                 const { data: user_id, error, response } = await supabase.functions.invoke(
                     'guest_free_ticket_claim',
@@ -370,7 +371,9 @@ function CheckoutModal({
                                                     {selectedTicket.price.toString() === '0' ? "Free" : `£${Number(selectedTicket.price).toFixed(2)}`}
                                                 </p>
                                             </div>
-                                            <div className="flex flex-row items-center gap-3">
+                                            <div 
+                                                hidden={isFree}
+                                                className="flex flex-row items-center gap-3">
 
                                                 <RemoveCircleIcon
                                                     fontSize="large"
@@ -460,11 +463,11 @@ function CheckoutModal({
                                 {/* Checkout Button (Sticky Bottom) */}
                                 <div className="fixed bottom-0 left-0 w-full xl:w-1/3 bg-white border-t border-gray-200 p-4 active:scale-[0.98] ">
                                     <button
-                                        onClick={() => { selectedTicket.price.toString() === '0' || appliedPromo?.discount_value === 100 ? handleFreeCheckout() : openStripePaymentModal() }}
+                                        onClick={() => { isFree ? handleFreeCheckout() : openStripePaymentModal() }}
                                         className="w-full bg-black text-white py-3 rounded-lg font-semibold"
                                     >
                                         {
-                                            selectedTicket.price.toString() === '0' || appliedPromo?.discount_value === 100 ? "Register" : 'Continue to Payment'
+                                            isFree ? "Register" : 'Continue to Payment'
                                         }
                                     </button>
                                 </div>
