@@ -283,7 +283,7 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                         description: `Lingala Lounge creates spaces for people to connect through Lingala and Congolese culture, whether they speak fluently, understand a little or are just beginning.
 
 At Learn Lingala Live, Lingala Lounge will bring the conversation, community and energy that turn language learning into a shared experience.`,
-                                        photo: 'https://www.eventbrite.com/e/_next/image?url=https%3A%2F%2Fimg.evbuc.com%2Fhttps%253A%252F%252Fcdn.evbuc.com%252Fimages%252F1191018419%252F3010741864204%252F1%252Foriginal.20260813-220359%3Fauto%3Dformat%252Ccompress%26q%3D75%26sharp%3D10%26rect%3D92%252C115%252C422%252C422%26s%3D99a91797c7cad2d5ddcdceeecfcb44a2&w=940&q=75',
+                                        photo: 'https://wffeinvprpdyobervinr.supabase.co/storage/v1/object/public/app_assets/lingalaloungeimage.webp',
                                         tiktok: 'https://www.tiktok.com/@lingalalounge',
                                         instagram: 'https://www.instagram.com/lingalaloungee/?hl=zh-cn',
                                     },
