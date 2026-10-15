@@ -8,6 +8,8 @@ import Price from './_components/price/Price';
 import SeeTickets from './_components/seetickets/SeeTickets';
 import { Metadata } from 'next';
 import TrackPageViews from './_components/pageviews/TrackPageViews';
+import Promoters from './_components/promoters/Promoters';
+import Lineup from './_components/lineup/Lineup';
 
 export async function generateMetadata({ params }: { params: { id: number } }): Promise<Metadata> {
     const { id } = await params;
@@ -82,7 +84,12 @@ export default async function EventPage({ params }: { params: { id: string } }) 
         try {
             const { data, error } = await supabase
                 .from('featured_events')
-                .select(`*, organizers(*, users(*)), ticket_types(*), refund_policy_types(*)`)
+                .select(`*
+                    , organizers(*, users(*))
+                    , ticket_types(*)
+                    , refund_policy_types(*)
+                    , organizer_collaboration(*, organizers(*, users(*)))
+                `)
                 .eq('featured_event_id', id)
                 .single();
             if (data) {
@@ -96,6 +103,15 @@ export default async function EventPage({ params }: { params: { id: string } }) 
         }
     };
     const event = await fetchEventData();
+
+    const collaborators = event.organizer_collaboration?.map(
+        ({ organizers: { users: { photo, name } } }: { organizers: { users: { photo: string, name: string } } }) => ({
+            photo: photo,
+            name: name,
+        })
+    ) ?? [];
+
+    console.log('Collaborators:', collaborators);
     return (
         <>
             <div className='text-white h-full mx-5 xl:flex justify-center xl:mt-20 xl:w-full'>
@@ -174,18 +190,16 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                             />
                         </div>
                         <div className='my-3'>
-                            <p className='text-2xl'>Promoter</p>
+                            <Promoters
+                                organizer={{ name: event.organizers.users.name, photo: event.organizers.users.photo }}
+                                collaborators={collaborators}
+                            />
+                            {/* <p className='text-2xl'>{ collaborators.length> 0 ?'Promoters': 'Promoter' }</p>
                             <div className='flex space-x-2 my-3 items-center '>
 
                                 {
                                     event?.organizers?.users.photo ?
                                         <a href={`/${event?.organizers?.users.name}`} target='_blank' rel='noopener noreferrer' className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
-                                            {/* <Image
-                                                src={event?.organizers?.users.photo}
-                                                alt={event.organizers.users.id}
-                                                fill
-                                                className="object-cover"
-                                            /> */}
                                             <img
                                                 src={event?.organizers?.users.photo}
                                                 alt={event.organizers.users.id}
@@ -215,8 +229,67 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                                 <p className='ml-3'>
                                     {event.organizers.users.name}
                                 </p>
-
                             </div>
+                            <div className='flex items-center space-x-2 '>
+
+                                {
+                                    collaborators?.map((collaborator: { photo: string; name: string }, index: number) =>
+                                    
+                                            <div key={index} className=' mt-2 flex items-center space-x-2'>
+                                       
+                                            {
+                                                collaborator.photo ?
+                                                    <a href={`/${collaborator.name}`} target='_blank' rel='noopener noreferrer' className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
+                                                        <img
+                                                            src={collaborators[0].photo}
+                                                            alt={collaborator.name}
+                                                            loading="lazy"
+                                                            className="object-cover"
+                                                        />
+                                                    </a>
+                                                    :
+                                                    <div
+                                                        className='flex justify-center'
+                                                        style={{
+                                                            backgroundColor: getColorFromName(collaborator.name),
+                                                            width: 55,
+                                                            height: 55,
+                                                            borderRadius: 50,
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            marginRight: 5,
+                                                            borderWidth: 1
+                                                        }}
+                                                    >
+                                                        <p style={{ color: '#fff', fontWeight: 'bold', fontSize: 20 }}>
+                                                            {collaborator.name.charAt(0).toUpperCase()}
+                                                        </p>
+                                                    </div>
+                                            }
+                                            <p className='ml-3'>
+                                                {collaborator.name}
+                                            </p>
+                                        </div>
+                                        )
+                                    
+                                }
+                            </div> */}
+                            {
+                                event.featured_event_id === 304 &&
+                            <Lineup
+                                members={[
+                                    {
+                                        name: 'Lingala Lounge',
+                                        description: `Lingala Lounge creates spaces for people to connect through Lingala and Congolese culture, whether they speak fluently, understand a little or are just beginning.
+
+At Learn Lingala Live, Lingala Lounge will bring the conversation, community and energy that turn language learning into a shared experience.`,
+                                        photo: 'https://www.eventbrite.com/e/_next/image?url=https%3A%2F%2Fimg.evbuc.com%2Fhttps%253A%252F%252Fcdn.evbuc.com%252Fimages%252F1191018419%252F3010741864204%252F1%252Foriginal.20260813-220359%3Fauto%3Dformat%252Ccompress%26q%3D75%26sharp%3D10%26rect%3D92%252C115%252C422%252C422%26s%3D99a91797c7cad2d5ddcdceeecfcb44a2&w=940&q=75',
+                                        tiktok: 'https://www.tiktok.com/@lingalalounge',
+                                        instagram: 'https://www.instagram.com/lingalaloungee/?hl=zh-cn',
+                                    },
+                                ]}
+                            />
+                            }
                             {event.cancelled ?
                                 <div className='bg-red-500 text-white p-2 rounded-md mb-3'>
                                     This event has been cancelled.
