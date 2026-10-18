@@ -88,7 +88,6 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                     , organizers(*, users(*))
                     , ticket_types(*)
                     , refund_policy_types(*)
-                    , organizer_collaboration(*, organizers(*, users(*)))
                 `)
                 .eq('featured_event_id', id)
                 .single();
@@ -104,14 +103,6 @@ export default async function EventPage({ params }: { params: { id: string } }) 
     };
     const event = await fetchEventData();
 
-    const collaborators = event.organizer_collaboration?.map(
-        ({ organizers: { users: { photo, name } } }: { organizers: { users: { photo: string, name: string } } }) => ({
-            photo: photo,
-            name: name,
-        })
-    ) ?? [];
-
-    console.log('Collaborators:', collaborators);
     return (
         <>
             <div className='text-white h-full mx-5 xl:flex justify-center xl:mt-20 xl:w-full'>
@@ -125,13 +116,6 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                         </div>
 
                         <div className='w-full  my-5 flex justify-center'>
-                            {/* <Image
-                                src={event.image_url}
-                                height={370}
-                                width={370}
-                                alt={event.title}
-                                className='rounded-xl xl:w-[110%]'
-                            /> */}
                             <img
                                 src={event.image_url}
                                 height={370}
@@ -192,90 +176,9 @@ export default async function EventPage({ params }: { params: { id: string } }) 
                         <div className='my-3'>
                             <Promoters
                                 organizer={{ name: event.organizers.users.name, photo: event.organizers.users.photo }}
-                                collaborators={collaborators}
                             />
-                            {/* <p className='text-2xl'>{ collaborators.length> 0 ?'Promoters': 'Promoter' }</p>
-                            <div className='flex space-x-2 my-3 items-center '>
-
-                                {
-                                    event?.organizers?.users.photo ?
-                                        <a href={`/${event?.organizers?.users.name}`} target='_blank' rel='noopener noreferrer' className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
-                                            <img
-                                                src={event?.organizers?.users.photo}
-                                                alt={event.organizers.users.id}
-                                                loading="lazy"
-                                                className="object-cover"
-                                            />
-                                        </a>
-                                        :
-                                        <div
-                                            className='flex justify-center'
-                                            style={{
-                                                backgroundColor: getColorFromName(event.organizers.users.name),
-                                                width: 55,
-                                                height: 55,
-                                                borderRadius: 50,
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                marginRight: 5,
-                                                borderWidth: 1
-                                            }}
-                                        >
-                                            <p style={{ color: '#fff', fontWeight: 'bold', fontSize: 20 }}>
-                                                {event.organizers.users.name.charAt(0).toUpperCase()}
-                                            </p>
-                                        </div>
-                                }
-                                <p className='ml-3'>
-                                    {event.organizers.users.name}
-                                </p>
-                            </div>
-                            <div className='flex items-center space-x-2 '>
-
-                                {
-                                    collaborators?.map((collaborator: { photo: string; name: string }, index: number) =>
-                                    
-                                            <div key={index} className=' mt-2 flex items-center space-x-2'>
-                                       
-                                            {
-                                                collaborator.photo ?
-                                                    <a href={`/${collaborator.name}`} target='_blank' rel='noopener noreferrer' className=" relative h-[50px] w-[50px] overflow-hidden rounded-full">
-                                                        <img
-                                                            src={collaborators[0].photo}
-                                                            alt={collaborator.name}
-                                                            loading="lazy"
-                                                            className="object-cover"
-                                                        />
-                                                    </a>
-                                                    :
-                                                    <div
-                                                        className='flex justify-center'
-                                                        style={{
-                                                            backgroundColor: getColorFromName(collaborator.name),
-                                                            width: 55,
-                                                            height: 55,
-                                                            borderRadius: 50,
-                                                            justifyContent: 'center',
-                                                            alignItems: 'center',
-                                                            marginRight: 5,
-                                                            borderWidth: 1
-                                                        }}
-                                                    >
-                                                        <p style={{ color: '#fff', fontWeight: 'bold', fontSize: 20 }}>
-                                                            {collaborator.name.charAt(0).toUpperCase()}
-                                                        </p>
-                                                    </div>
-                                            }
-                                            <p className='ml-3'>
-                                                {collaborator.name}
-                                            </p>
-                                        </div>
-                                        )
-                                    
-                                }
-                            </div> */}
-                            {
-                                event.featured_event_id === 304 &&
+                            {/* Patch for loba Lingala */}
+                            {event.organizer_id === 189 &&
                             <Lineup
                                 members={[
                                     {
@@ -296,7 +199,6 @@ At Learn Lingala Live, Lingala Lounge will bring the conversation, community and
                                 </div>
                                 :
                                 <SeeTickets
-                                    // ticket_types={event.ticket_types}
                                     event={event}
                                 />
 

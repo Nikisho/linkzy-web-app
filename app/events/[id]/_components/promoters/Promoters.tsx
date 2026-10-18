@@ -8,11 +8,10 @@ type Promoter = {
 
 type PromotersProps = {
     organizer: Promoter
-    collaborators?: Promoter[]
 }
 
-function Promoters({ organizer, collaborators = [] }: PromotersProps) {
-    const promoters = [organizer, ...collaborators]
+function Promoters({ organizer }: PromotersProps) {
+    const promoters = [organizer]
 
     return (
         <div className="my-3">
