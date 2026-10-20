@@ -7,6 +7,7 @@ import CheckoutModal from '../checkout/CheckoutModal';
 import { Event } from '@/app/_types/Event';
 import { getPricePlusPlatformFee } from '@/app/_utils/getPricePlusPlatformFee';
 import formatDateShortWeekday from '@/app/_utils/formatDateShortWeekday';
+import WaitListFormModal from '../waitlistform/WaitListFormModal';
 
 function TicketsModal({
     open,
@@ -14,12 +15,17 @@ function TicketsModal({
     event
 }: { open: boolean, setOpen: (bool: boolean) => void, event: Event }) {
     const [openCheckoutModal, setOpenCheckoutModal] = useState<boolean>(false);
+    const [openWaitListModal, setOpenWaitListModal] = useState<boolean>(false);
     const [selectedTicketType, setSelectedTicketType] = useState<TicketTypes | null>(null);
     const handleSelect = (ticket: TicketTypes) => {
         setSelectedTicketType(ticket)
         setOpenCheckoutModal(!openCheckoutModal)
     };
-
+    const handleWaitList = (ticket: TicketTypes) => {
+        console.log('ticket', ticket)
+        setSelectedTicketType(ticket)
+        setOpenWaitListModal(!openWaitListModal)
+    };
 
 
     return (
@@ -101,14 +107,26 @@ function TicketsModal({
 
                                             {/* CTA */}
                                             <button
-                                                disabled={soldOut || hasSalesEnded || salesNotStarted}
-                                                onClick={() => handleSelect(type)}
-                                                className={`w-full py-2 rounded-lg font-semibold ${soldOut || hasSalesEnded || salesNotStarted
-                                                    ? "bg-gray-300 text-gray-600"
-                                                    : "bg-black text-white active:scale-[0.98] transition duration-300"
+                                                disabled={hasSalesEnded || salesNotStarted}
+                                                onClick={() => {
+                                                    if (soldOut && !hasSalesEnded) {
+                                                        handleWaitList(type);
+                                                    } else if (!soldOut && !hasSalesEnded && !salesNotStarted) {
+                                                        handleSelect(type);
+                                                    }
+                                                }}
+                                                className={`w-full py-2.5 rounded-lg font-semibold transition duration-200 ${hasSalesEnded || salesNotStarted
+                                                        ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                                                        : "bg-black text-white active:scale-[0.98] hover:bg-gray-800"
                                                     }`}
                                             >
-                                                {soldOut ? "Sold out" : (hasSalesEnded ? 'Sales ended' : (salesNotStarted ? `Sales start on ${formatDateShortWeekday(salesStartDate)}` : 'Select'))}
+                                                {hasSalesEnded
+                                                    ? "Sales ended"
+                                                    : salesNotStarted
+                                                        ? `Sales start on ${formatDateShortWeekday(salesStartDate)}`
+                                                        : soldOut
+                                                            ? "Sold out — Join the Waitlist"
+                                                            : "Select"}
                                             </button>
                                         </div>
                                     );
@@ -120,6 +138,13 @@ function TicketsModal({
             <CheckoutModal
                 open={openCheckoutModal}
                 setOpen={setOpenCheckoutModal}
+                event={event}
+                selectedTicket={selectedTicketType!}
+            />
+
+            <WaitListFormModal
+                open={openWaitListModal}
+                setOpen={setOpenWaitListModal}
                 event={event}
                 selectedTicket={selectedTicketType!}
             />
