@@ -47,7 +47,6 @@ function WaitListFormModal({
     };
     const handleJoinWaitlist = async () => {
 
-
         setServerError("");
         setSuccess(false);
 
@@ -98,6 +97,17 @@ function WaitListFormModal({
                 );
                 return;
             }
+
+            await supabase.functions.invoke(
+                'notify-organizer-waitlist-signup',
+                {
+                    body: {
+                        name: user.name.trim(),
+                        email: user.email.toLowerCase().trim(),
+                        featured_event_id: selectedTicket.featured_event_id,
+                    }
+                }
+            );
 
             setSuccess(true);
         } catch (error) {
